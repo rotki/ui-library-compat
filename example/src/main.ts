@@ -6,8 +6,12 @@ import { PiniaVuePlugin, createPinia, setActivePinia } from 'pinia';
 import {
   RiAddFill,
   RiAlertLine,
+  RiArrowDownSLine,
   RiArrowLeftLine,
+  RiArrowLeftSLine,
   RiArrowRightLine,
+  RiArrowRightSLine,
+  RiArrowUpSLine,
   RiCheckboxCircleLine,
   RiCloseFill,
   RiErrorWarningLine,
@@ -35,6 +39,10 @@ Vue.use(RuiPlugin, {
     RiCloseFill,
     RiInformationLine,
     RiErrorWarningLine,
+    RiArrowLeftSLine,
+    RiArrowRightSLine,
+    RiArrowUpSLine,
+    RiArrowDownSLine,
   ],
 });
 

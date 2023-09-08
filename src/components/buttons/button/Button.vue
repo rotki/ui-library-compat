@@ -11,6 +11,7 @@ export interface Props {
   variant?: 'default' | 'outlined' | 'text' | 'fab';
   icon?: boolean;
   size?: 'sm' | 'lg';
+  tag?: 'button' | 'a';
 }
 
 defineOptions({
@@ -26,9 +27,10 @@ const props = withDefaults(defineProps<Props>(), {
   variant: 'default',
   icon: false,
   size: undefined,
+  tag: 'button',
 });
 
-const emit = defineEmits<{ (e: 'click'): void }>();
+const emit = defineEmits<{ (e: 'click', event: Event): void }>();
 
 const { disabled, elevation, variant, size } = toRefs(props);
 
@@ -65,7 +67,8 @@ const spinnerSize: ComputedRef<number> = computed(() => {
 </script>
 
 <template>
-  <button
+  <Component
+    :is="tag"
     :class="[
       css.btn,
       css[color ?? 'grey'],
@@ -80,7 +83,7 @@ const spinnerSize: ComputedRef<number> = computed(() => {
     ]"
     :disabled="disabled || loading"
     v-bind="attrs"
-    @click="emit('click')"
+    @click="emit('click', $event)"
   >
     <slot name="prepend" />
     <span :class="css.label"> <slot /> </span>
@@ -92,7 +95,7 @@ const spinnerSize: ComputedRef<number> = computed(() => {
       variant="indeterminate"
       :size="spinnerSize"
     />
-  </button>
+  </Component>
 </template>
 
 <style lang="scss" module>

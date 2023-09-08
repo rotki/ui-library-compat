@@ -34,7 +34,12 @@ export default defineConfig({
     vue(),
     DefineOptions(),
     AutoImport({
-      imports: ['vue', '@vueuse/core', { '@vueuse/shared': ['get', 'set'] }],
+      imports: [
+        'vue',
+        'vue-router',
+        '@vueuse/core',
+        { '@vueuse/shared': ['get', 'set'] },
+      ],
       dts: './auto-imports.d.ts',
       dirs: ['src/composables/**', 'src/utils/**'],
       vueTemplate: true,

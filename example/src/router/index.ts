@@ -90,6 +90,11 @@ const router = new VueRouter({
       name: 'cards',
       component: () => import('@/views/CardView.vue'),
     },
+    {
+      path: '/tabs',
+      name: 'tabs',
+      component: () => import('@/views/TabView.vue'),
+    },
   ],
 });
 

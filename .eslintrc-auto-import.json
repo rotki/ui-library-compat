@@ -317,6 +317,13 @@
     "DEFAULT_POPPER_OPTIONS": true,
     "formatCurrency": true,
     "formatNumber": true,
-    "formatInteger": true
+    "formatInteger": true,
+    "onBeforeRouteLeave": true,
+    "onBeforeRouteUpdate": true,
+    "useLink": true,
+    "useRoute": true,
+    "useRouter": true,
+    "WritableComputedRef": true,
+    "assert": true
   }
 }

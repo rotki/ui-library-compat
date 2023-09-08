@@ -1,3 +1,4 @@
+/* eslint-disable max-lines,import/max-dependencies */
 import { default as RuiAlert } from '@/components/alerts/Alert.vue';
 import {
   type Props as ButtonProps,
@@ -43,6 +44,10 @@ import {
   type Props as CardProps,
   default as RuiCard,
 } from '@/components/cards/Card.vue';
+import { default as RuiTabs } from '@/components/tabs/tabs/Tabs.vue';
+import { default as RuiTab } from '@/components/tabs/tab/Tab.vue';
+import { default as RuiTabItems } from '@/components/tabs/tab-items/TabItems.vue';
+import { default as RuiTabItem } from '@/components/tabs/tab-item/TabItem.vue';
 
 export {
   RuiAlert,
@@ -63,6 +68,10 @@ export {
   RuiDataTable,
   RuiSimpleSelect,
   RuiCard,
+  RuiTabs,
+  RuiTab,
+  RuiTabItems,
+  RuiTabItem,
   ProgressProps,
   ChipProps,
   TextFieldProps,
