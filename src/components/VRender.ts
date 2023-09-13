@@ -23,12 +23,15 @@ export default defineComponent({
     }
 
     vNode.key = key;
-    vNode.data = {
-      ...vNode.data,
-      class: {
-        [ctx.data.class]: true,
-      },
-    };
+    if (vNode.data.class) {
+      vNode.data = {
+        ...vNode.data,
+        class: {
+          [ctx.data.class]: true,
+        },
+      };
+    }
+
     return vNode;
   },
 });
