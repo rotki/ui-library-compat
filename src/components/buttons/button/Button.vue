@@ -3,6 +3,7 @@ import { type ContextColorsType } from '@/consts/colors';
 import { default as RuiProgress } from '@/components/progress/Progress.vue';
 
 export interface Props {
+  value?: unknown;
   disabled?: boolean;
   loading?: boolean;
   color?: ContextColorsType;
@@ -19,6 +20,7 @@ defineOptions({
 });
 
 const props = withDefaults(defineProps<Props>(), {
+  value: undefined,
   disabled: false,
   loading: false,
   color: undefined,

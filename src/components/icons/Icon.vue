@@ -3,6 +3,7 @@ import { type ContextColorsType } from '@/consts/colors';
 import { type RuiIcons } from '~/src';
 
 export interface Props {
+  value?: unknown;
   name: RuiIcons;
   size?: number | string;
   color?: ContextColorsType;
@@ -13,6 +14,7 @@ defineOptions({
 });
 
 const props = withDefaults(defineProps<Props>(), {
+  value: undefined,
   size: 24,
   color: undefined,
 });
