@@ -35,7 +35,7 @@ const slots = useSlots();
 const { value, required } = toRefs(props);
 const children = computed(() =>
   (slots.default?.() ?? []).map((node, i) => {
-    const propsData = node.componentOptions?.propsData as ButtonProps;
+    const propsData = (node.componentOptions?.propsData || {}) as ButtonProps;
 
     propsData.active = activeItem(propsData?.value ?? i);
     return { node, props: propsData };
