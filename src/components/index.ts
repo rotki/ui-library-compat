@@ -100,6 +100,7 @@ import {
   default as RuiTabs,
   type Props as TabsProps,
 } from '@/components/tabs/tabs/Tabs.vue';
+import { default as RuiDivider } from '@/components/divider/Divider.vue';
 
 export {
   RuiAlert,
@@ -127,6 +128,7 @@ export {
   RuiTabItems,
   RuiTabItem,
   RuiTablePagination,
+  RuiDivider,
   ProgressProps,
   ChipProps,
   TextFieldProps,
