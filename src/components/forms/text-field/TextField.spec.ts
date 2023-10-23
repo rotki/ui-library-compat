@@ -83,7 +83,7 @@ describe('Forms/TextField', () => {
 
   it('passes hint props', async () => {
     const wrapper = createWrapper();
-    expect(wrapper.find('.details > span > div').text()).toBe('');
+    expect(wrapper.find('.details > span > div').exists()).toBeFalsy();
 
     const hint = 'Text Fields Hints';
     await wrapper.setProps({ hint });
@@ -95,7 +95,7 @@ describe('Forms/TextField', () => {
 
   it('passes hint errorMessages', async () => {
     const wrapper = createWrapper();
-    expect(wrapper.find('.details > span > div').text()).toBe('');
+    expect(wrapper.find('.details > span > div').exists()).toBeFalsy();
 
     const errorMessage = 'Text Fields Error Message';
     await wrapper.setProps({ errorMessages: [errorMessage] });
@@ -107,7 +107,7 @@ describe('Forms/TextField', () => {
 
   it('passes hint successMessages', async () => {
     const wrapper = createWrapper();
-    expect(wrapper.find('.details > span > div').text()).toBe('');
+    expect(wrapper.find('.details > span > div').exists()).toBeFalsy();
 
     const successMessage = 'Text Fields Error Message';
     await wrapper.setProps({ successMessages: [successMessage] });

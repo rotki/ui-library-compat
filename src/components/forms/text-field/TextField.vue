@@ -154,7 +154,7 @@ watch(value, (val) => {
         </div>
       </div>
     </div>
-    <div v-if="!hideDetails" class="details pt-1">
+    <div v-if="!hideDetails" class="details pt-1 min-h-[1.5rem] px-3">
       <TransitionGroup
         enter-class="opacity-0 -translate-y-2"
         enter-active-class="transform transition"
@@ -181,7 +181,6 @@ watch(value, (val) => {
         >
           {{ hint }}
         </div>
-        <div v-else key="placeholder" class="h-5" />
       </TransitionGroup>
     </div>
   </div>
