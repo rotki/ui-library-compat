@@ -12,6 +12,7 @@ export interface Props {
 
 defineOptions({
   name: 'RuiCard',
+  inheritAttrs: false,
 });
 
 withDefaults(defineProps<Props>(), {

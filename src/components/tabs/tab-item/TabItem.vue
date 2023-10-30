@@ -8,6 +8,7 @@ export interface TabItemProps {
 
 defineOptions({
   name: 'RuiTabItem',
+  inheritAttrs: false,
 });
 
 withDefaults(defineProps<TabItemProps>(), {

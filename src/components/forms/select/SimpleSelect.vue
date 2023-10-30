@@ -11,6 +11,7 @@ export interface Props {
 
 defineOptions({
   name: 'RuiSimpleSelect',
+  inheritAttrs: false,
 });
 
 const props = withDefaults(defineProps<Props>(), {

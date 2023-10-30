@@ -16,6 +16,7 @@ export interface Props {
 
 defineOptions({
   name: 'RuiRadio',
+  inheritAttrs: false,
 });
 
 const props = withDefaults(defineProps<Props>(), {

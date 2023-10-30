@@ -14,6 +14,7 @@ export interface Props {
 
 defineOptions({
   name: 'RuiTooltip',
+  inheritAttrs: false,
 });
 
 const props = withDefaults(defineProps<Props>(), {

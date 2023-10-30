@@ -20,6 +20,7 @@ export interface ButtonProps {
 
 defineOptions({
   name: 'RuiButton',
+  inheritAttrs: false,
 });
 
 const props = withDefaults(defineProps<ButtonProps>(), {

@@ -13,6 +13,7 @@ export interface Props {
 
 defineOptions({
   name: 'RuiChip',
+  inheritAttrs: false,
 });
 
 withDefaults(defineProps<Props>(), {

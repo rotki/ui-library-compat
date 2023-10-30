@@ -5,6 +5,7 @@ export interface Props {
 
 defineOptions({
   name: 'RuiCardHeader',
+  inheritAttrs: false,
 });
 
 withDefaults(defineProps<Props>(), {

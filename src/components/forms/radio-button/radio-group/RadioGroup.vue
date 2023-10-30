@@ -11,6 +11,7 @@ export interface Props {
 
 defineOptions({
   name: 'RuiRadioGroup',
+  inheritAttrs: false,
 });
 
 withDefaults(defineProps<Props>(), {

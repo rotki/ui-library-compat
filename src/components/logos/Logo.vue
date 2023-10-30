@@ -8,6 +8,7 @@ export interface Props {
 
 defineOptions({
   name: 'RuiLogo',
+  inheritAttrs: false,
 });
 
 withDefaults(defineProps<Props>(), {

@@ -5,6 +5,7 @@ export interface Props {
 
 defineOptions({
   name: 'RuiDivider',
+  inheritAttrs: false,
 });
 
 withDefaults(defineProps<Props>(), {

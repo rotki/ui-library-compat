@@ -19,6 +19,7 @@ export interface TabProps {
 
 defineOptions({
   name: 'RuiTab',
+  inheritAttrs: false,
 });
 
 const props = withDefaults(defineProps<TabProps>(), {

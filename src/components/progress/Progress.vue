@@ -28,6 +28,7 @@ export interface Props {
 
 defineOptions({
   name: 'RuiProgress',
+  inheritAttrs: false,
 });
 
 const props = withDefaults(defineProps<Props>(), {

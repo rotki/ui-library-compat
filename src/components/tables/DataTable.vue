@@ -126,6 +126,7 @@ export interface Props {
 
 defineOptions({
   name: 'RuiDataTable',
+  inheritAttrs: false,
 });
 
 const props = withDefaults(defineProps<Props>(), {

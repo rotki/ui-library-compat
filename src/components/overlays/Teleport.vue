@@ -7,6 +7,7 @@ import TeleportContainer from './teleport-container';
 defineOptions({
   name: 'RuiTeleport',
   abstract: true,
+  inheritAttrs: false,
 });
 
 const props = withDefaults(

@@ -18,6 +18,7 @@ export interface Props {
 
 defineOptions({
   name: 'RuiButtonGroup',
+  inheritAttrs: false,
 });
 
 const props = withDefaults(defineProps<Props>(), {

@@ -20,6 +20,7 @@ export interface Props {
 
 defineOptions({
   name: 'RuiStepper',
+  inheritAttrs: false,
 });
 
 const props = withDefaults(defineProps<Props>(), {

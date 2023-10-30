@@ -20,6 +20,7 @@ export interface Props {
 
 defineOptions({
   name: 'RuiBadge',
+  inheritAttrs: false,
 });
 
 const props = withDefaults(defineProps<Props>(), {
