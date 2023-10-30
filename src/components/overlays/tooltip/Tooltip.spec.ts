@@ -7,7 +7,9 @@ const createWrapper = (options?: any) =>
   mount(Tooltip, {
     ...options,
     slots: {
-      activator: { template: '<rui-button>Tooltip trigger</rui-button>' },
+      activator: {
+        template: '<rui-button id="trigger">Tooltip trigger</rui-button>',
+      },
       default: options?.props?.text ?? '',
     },
     stubs: { RuiButton: Button },
@@ -50,7 +52,7 @@ describe('Tooltip', () => {
         disabled: true,
       },
     });
-    expect(wrapper.get('div[class*=_activator_]')).toBeTruthy();
+    expect(wrapper.get('#trigger')).toBeTruthy();
     expect(document.body.querySelector('div[role=tooltip]')).toBeFalsy();
     wrapper.destroy();
   });
