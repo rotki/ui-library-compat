@@ -49,6 +49,10 @@ const {
     :data-tooltip-disabled="disabled"
     @mouseover="onMouseOver()"
     @mouseleave="onMouseLeave()"
+    v-on="
+      // eslint-disable-next-line vue/no-deprecated-dollar-listeners-api
+      $listeners
+    "
   >
     <slot name="activator" :open="open" />
 
