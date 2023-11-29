@@ -1,8 +1,9 @@
 <script lang="ts" setup>
-import { logicOr } from '@vueuse/math';
+import { logicAnd, logicNot, logicOr } from '@vueuse/math';
 import { objectOmit } from '@vueuse/shared';
 import { type ContextColorsType } from '@/consts/colors';
-import Icon from '@/components/icons/Icon.vue';
+import Icon, { default as RuiIcon } from '@/components/icons/Icon.vue';
+import { default as RuiButton } from '@/components/buttons/button/Button.vue';
 import { type RuiIcons } from '~/src';
 
 export interface Props {
@@ -11,8 +12,8 @@ export interface Props {
   placeholder?: string;
   disabled?: boolean;
   variant?: 'default' | 'filled' | 'outlined';
-  color?: 'grey' | ContextColorsType;
-  textColor?: 'grey' | ContextColorsType;
+  color?: ContextColorsType;
+  textColor?: ContextColorsType;
   dense?: boolean;
   hint?: string;
   errorMessages?: string[];
@@ -21,6 +22,7 @@ export interface Props {
   prependIcon?: RuiIcons;
   appendIcon?: RuiIcons;
   readonly?: boolean;
+  clearable?: boolean;
 }
 
 defineOptions({
@@ -34,7 +36,7 @@ const props = withDefaults(defineProps<Props>(), {
   placeholder: '',
   disabled: false,
   variant: 'default',
-  color: 'grey',
+  color: undefined,
   textColor: undefined,
   dense: false,
   hint: '',
@@ -44,13 +46,23 @@ const props = withDefaults(defineProps<Props>(), {
   prependIcon: undefined,
   appendIcon: undefined,
   readonly: false,
+  clearable: false,
 });
 
 const emit = defineEmits<{
   (e: 'input', modelValue: string): void;
+  (e: 'click:clear'): void;
 }>();
 
-const { label, value, errorMessages, successMessages } = toRefs(props);
+const {
+  label,
+  value,
+  clearable,
+  disabled,
+  readonly,
+  errorMessages,
+  successMessages,
+} = toRefs(props);
 
 const labelWithQuote = computed(() => {
   const labelVal = get(label);
@@ -85,6 +97,21 @@ const hasMessages = logicOr(hasError, hasSuccess);
 const css = useCssModule();
 const attrs = useAttrs();
 const slots = useSlots();
+
+const clearIconClicked = () => {
+  set(internalValue, '');
+  emit('click:clear');
+};
+
+const input = ref();
+const { focused } = useFocus(input);
+
+const showClearIcon = logicAnd(
+  clearable,
+  internalValue,
+  logicNot(disabled),
+  logicNot(readonly),
+);
 </script>
 
 <template>
@@ -105,16 +132,17 @@ const slots = useSlots();
         },
       ]"
     >
-      <div class="flex items-center shrink-0">
-        <div v-if="slots.prepend" :class="css.prepend">
+      <div class="flex items-center gap-1 shrink-0" :class="css.prepend">
+        <div v-if="slots.prepend">
           <slot name="prepend" />
         </div>
-        <div v-else-if="prependIcon" :class="[css.icon, css.prepend]">
+        <div v-else-if="prependIcon" :class="[css.icon]">
           <Icon :name="prependIcon" />
         </div>
       </div>
       <div ref="innerWrapper" class="flex flex-1 overflow-hidden">
         <input
+          ref="input"
           v-model="internalValue"
           :placeholder="placeholder || ' '"
           :class="css.input"
@@ -133,11 +161,23 @@ const slots = useSlots();
           <legend />
         </fieldset>
       </div>
-      <div class="flex items-center shrink-0">
-        <div v-if="slots.append" :class="css.append">
+      <div class="flex items-center gap-1 shrink-0" :class="css.append">
+        <RuiButton
+          v-if="showClearIcon"
+          :class="{ hidden: !focused }"
+          variant="text"
+          type="button"
+          icon
+          class="!p-2"
+          :color="color"
+          @click.stop="clearIconClicked()"
+        >
+          <RuiIcon name="close-line" size="20" />
+        </RuiButton>
+        <div v-if="slots.append">
           <slot name="append" />
         </div>
-        <div v-else-if="appendIcon" :class="[css.icon, css.append]">
+        <div v-else-if="appendIcon" :class="[css.icon]">
           <Icon :name="appendIcon" />
         </div>
       </div>
@@ -281,11 +321,15 @@ const slots = useSlots();
   }
 
   .prepend {
-    @apply mr-2;
+    &:not(:empty) {
+      @apply mr-2;
+    }
   }
 
   .append {
-    @apply ml-2;
+    &:not(:empty) {
+      @apply ml-2;
+    }
   }
 
   @each $color in c.$context-colors {
@@ -359,11 +403,15 @@ const slots = useSlots();
     @apply pt-0;
 
     .prepend {
-      @apply ml-3 mr-0;
+      &:not(:empty) {
+        @apply ml-3 mr-0;
+      }
     }
 
     .append {
-      @apply mr-3 ml-0;
+      &:not(:empty) {
+        @apply mr-3 ml-0;
+      }
     }
 
     .input {

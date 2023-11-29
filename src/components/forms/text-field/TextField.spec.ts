@@ -37,10 +37,11 @@ describe('Forms/TextField', () => {
   });
 
   it('passes color props', async () => {
-    const wrapper = createWrapper();
-    expect(wrapper.find('div[class*=wrapper]').classes()).toMatch(/_grey_/);
-
-    await wrapper.setProps({ color: 'primary' });
+    const wrapper = createWrapper({
+      propsData: {
+        color: 'primary',
+      },
+    });
     expect(wrapper.find('div[class*=wrapper]').classes()).toMatch(/_primary_/);
 
     await wrapper.setProps({ color: 'secondary' });

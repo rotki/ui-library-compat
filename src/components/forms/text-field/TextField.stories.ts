@@ -177,4 +177,14 @@ export const Readonly: Story = {
   },
 };
 
+export const Clearable: Story = {
+  args: {
+    label: 'Label',
+    placeholder: 'Placeholder',
+    variant: 'outlined',
+    clearable: true,
+    value: 'Clearable text',
+  },
+};
+
 export default meta;

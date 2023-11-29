@@ -12,8 +12,8 @@ export interface Props {
   placeholder?: string;
   disabled?: boolean;
   variant?: 'default' | 'filled' | 'outlined';
-  color?: 'grey' | ContextColorsType;
-  textColor?: 'grey' | ContextColorsType;
+  color?: ContextColorsType;
+  textColor?: ContextColorsType;
   dense?: boolean;
   hint?: string;
   errorMessages?: string[];
@@ -22,6 +22,7 @@ export interface Props {
   prependIcon?: RuiIcons;
   appendIcon?: RuiIcons;
   readonly?: boolean;
+  clearable?: boolean;
 }
 
 defineOptions({
@@ -34,7 +35,7 @@ const props = withDefaults(defineProps<Props>(), {
   label: '',
   placeholder: '',
   variant: 'default',
-  color: 'grey',
+  color: undefined,
   textColor: undefined,
   hint: '',
   errorMessages: () => [],
@@ -63,25 +64,23 @@ const slots = useSlots();
       <slot name="prepend" />
     </template>
     <template #append>
-      <div class="flex items-center">
-        <RuiButton
-          :disabled="disabled"
-          tabindex="-1"
-          variant="text"
-          type="button"
-          icon
-          class="-mr-1 !p-2"
-          @click="hidden = !hidden"
-        >
-          <RuiIcon
-            class="text-black/[.54] dark:text-white/[.56]"
-            size="20"
-            :name="hidden ? 'eye-off-line' : 'eye-line'"
-          />
-        </RuiButton>
+      <RuiButton
+        :disabled="disabled"
+        tabindex="-1"
+        variant="text"
+        type="button"
+        icon
+        class="!p-2"
+        @click="hidden = !hidden"
+      >
+        <RuiIcon
+          class="text-black/[.54] dark:text-white/[.56]"
+          size="20"
+          :name="hidden ? 'eye-off-line' : 'eye-line'"
+        />
+      </RuiButton>
 
-        <slot name="append" />
-      </div>
+      <slot name="append" />
     </template>
   </RuiTextField>
 </template>
