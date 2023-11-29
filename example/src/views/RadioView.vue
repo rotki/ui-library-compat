@@ -6,9 +6,7 @@ import {
 } from '@rotki/ui-library-compat';
 import { ref } from 'vue';
 
-type RadioData = RadioProps;
-
-const radios = ref<RadioData[]>([
+const radios = ref<RadioProps[]>([
   {
     internalValue: 'primary',
     value: 'primary',

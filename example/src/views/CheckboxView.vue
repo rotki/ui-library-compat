@@ -2,9 +2,7 @@
 import { type CheckboxProps, RuiCheckbox } from '@rotki/ui-library-compat';
 import { ref } from 'vue';
 
-type CheckboxData = CheckboxProps;
-
-const checkboxes = ref<CheckboxData[]>([
+const checkboxes = ref<CheckboxProps[]>([
   { value: false, color: 'primary' },
   { value: false, color: 'secondary' },
   { value: false, color: 'error' },

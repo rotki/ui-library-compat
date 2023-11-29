@@ -73,24 +73,24 @@ describe('Forms/Checkbox', () => {
 
   it('passes hint props', async () => {
     const wrapper = createWrapper();
-    expect(wrapper.find('.details >  div').exists()).toBeFalsy();
+    expect(wrapper.find('.details > div').exists()).toBeFalsy();
 
     const hint = 'Checkbox Hints';
     await wrapper.setProps({ hint });
-    expect(wrapper.find('.details >  div').classes()).toMatch(
+    expect(wrapper.find('.details > div').classes()).toMatch(
       /text-rui-text-secondary/,
     );
-    expect(wrapper.find('.details >  div').text()).toBe(hint);
+    expect(wrapper.find('.details > div').text()).toBe(hint);
   });
 
   it('passes hint errorMessages', async () => {
     const wrapper = createWrapper();
-    expect(wrapper.find('.details >  div').exists()).toBeFalsy();
+    expect(wrapper.find('.details > div').exists()).toBeFalsy();
 
     const errorMessage = 'Checkbox Error Message';
     await wrapper.setProps({ errorMessages: [errorMessage] });
-    expect(wrapper.find('.details >  div').classes()).toMatch(/text-rui-error/);
-    expect(wrapper.find('.details >  div').text()).toBe(errorMessage);
+    expect(wrapper.find('.details > div').classes()).toMatch(/text-rui-error/);
+    expect(wrapper.find('.details > div').text()).toBe(errorMessage);
   });
 
   it('passes hideDetails', async () => {
@@ -100,6 +100,6 @@ describe('Forms/Checkbox', () => {
         hideDetails: true,
       },
     });
-    expect(wrapper.find('.details >  div').exists()).toBeFalsy();
+    expect(wrapper.find('.details > div').exists()).toBeFalsy();
   });
 });

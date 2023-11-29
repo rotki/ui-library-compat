@@ -1,11 +1,10 @@
 <script lang="ts" setup>
-import { logicAnd, logicNot, logicOr } from '@vueuse/math';
 import { objectOmit } from '@vueuse/shared';
+import { logicAnd, logicNot } from '@vueuse/math';
 import { type ContextColorsType } from '@/consts/colors';
 import Icon, { default as RuiIcon } from '@/components/icons/Icon.vue';
 import { default as RuiButton } from '@/components/buttons/button/Button.vue';
 import FormTextDetail from '@/components/helpers/FormTextDetail.vue';
-
 import { type RuiIcons } from '~/src';
 
 export interface Props {
