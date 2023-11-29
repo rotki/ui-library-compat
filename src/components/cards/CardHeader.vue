@@ -54,7 +54,7 @@ const slots = useSlots();
   }
 
   .subheader {
-    @apply text-rui-text-secondary text-body-2;
+    @apply text-rui-text-secondary text-body-2 mb-0;
   }
 
   &.has_prepend {

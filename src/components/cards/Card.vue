@@ -8,6 +8,7 @@ export interface Props {
   elevation?: number;
   variant?: 'flat' | 'outlined';
   rounded?: 'sm' | 'md' | 'lg';
+  noPadding?: boolean;
 }
 
 defineOptions({
@@ -20,6 +21,7 @@ withDefaults(defineProps<Props>(), {
   elevation: 0,
   variant: 'outlined',
   rounded: 'md',
+  noPadding: false,
 });
 
 const css = useCssModule();
@@ -38,6 +40,7 @@ const hasHeadContent = computed(() => !!slots.header || !!slots.subheader);
         [css.outlined]: variant === 'outlined',
         [css.dense]: dense,
         [css.divide]: divide,
+        [css['no-padding']]: noPadding,
       },
     ]"
   >
@@ -122,6 +125,12 @@ const hasHeadContent = computed(() => !!slots.header || !!slots.subheader);
 
     .footer {
       @apply py-1 flex space-x-2;
+    }
+  }
+
+  &.no-padding {
+    .content {
+      @apply p-0;
     }
   }
 }
