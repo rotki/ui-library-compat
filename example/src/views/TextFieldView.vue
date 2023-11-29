@@ -82,7 +82,7 @@ const textFields = ref<TextFieldData[]>([
     value: '',
     color: 'secondary',
     variant: 'outlined',
-    errorMessages: ['Text field error message'],
+    errorMessages: 'Text field error message',
   },
   {
     value: '',
@@ -94,19 +94,19 @@ const textFields = ref<TextFieldData[]>([
     value: '',
     color: 'warning',
     variant: 'outlined',
-    errorMessages: ['Text field error message'],
+    successMessages: ['Text field success message'],
   },
   {
     value: '',
     color: 'info',
     variant: 'outlined',
-    errorMessages: ['Text field error message'],
+    successMessages: 'Text field success message',
   },
   {
     value: '',
     color: 'success',
     variant: 'outlined',
-    errorMessages: ['Text field error message'],
+    successMessages: ['Text field success message'],
   },
 
   {

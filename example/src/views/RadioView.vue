@@ -6,9 +6,7 @@ import {
 } from '@rotki/ui-library-compat';
 import { ref } from 'vue';
 
-type RadioData = RadioProps & {
-  label?: string;
-};
+type RadioData = RadioProps;
 
 const radios = ref<RadioData[]>([
   {
@@ -226,6 +224,50 @@ const radioGroups = ref([
       { color: 'success', size: 'lg', internalValue: 'success' },
     ],
   },
+  {
+    value: 'primary',
+    errorMessages: 'This is error messages',
+    options: [
+      { color: 'primary', size: 'lg', internalValue: 'primary' },
+      {
+        color: 'secondary',
+        size: 'lg',
+        disabled: true,
+        internalValue: 'secondary',
+      },
+      { color: 'error', size: 'lg', disabled: true, internalValue: 'error' },
+      {
+        color: 'warning',
+        size: 'lg',
+        disabled: true,
+        internalValue: 'warning',
+      },
+      { color: 'info', size: 'lg', disabled: true, internalValue: 'info' },
+      { color: 'success', size: 'lg', internalValue: 'success' },
+    ],
+  },
+  {
+    value: 'primary',
+    successMessages: 'This is success messages',
+    options: [
+      { color: 'primary', size: 'lg', internalValue: 'primary' },
+      {
+        color: 'secondary',
+        size: 'lg',
+        disabled: true,
+        internalValue: 'secondary',
+      },
+      { color: 'error', size: 'lg', disabled: true, internalValue: 'error' },
+      {
+        color: 'warning',
+        size: 'lg',
+        disabled: true,
+        internalValue: 'warning',
+      },
+      { color: 'info', size: 'lg', disabled: true, internalValue: 'info' },
+      { color: 'success', size: 'lg', internalValue: 'success' },
+    ],
+  },
 ]);
 </script>
 
@@ -247,6 +289,7 @@ const radioGroups = ref([
       <RuiRadioGroup
         v-for="(radioGroup, i) in radioGroups"
         :key="i"
+        v-bind="radioGroup"
         v-model="radioGroup.value"
         :hint="`Selected value: ${radioGroup.value}`"
         inline

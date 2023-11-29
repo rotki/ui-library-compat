@@ -4,6 +4,8 @@ import { objectOmit } from '@vueuse/shared';
 import { type ContextColorsType } from '@/consts/colors';
 import Icon, { default as RuiIcon } from '@/components/icons/Icon.vue';
 import { default as RuiButton } from '@/components/buttons/button/Button.vue';
+import FormTextDetail from '@/components/helpers/FormTextDetail.vue';
+
 import { type RuiIcons } from '~/src';
 
 export interface Props {
@@ -16,8 +18,8 @@ export interface Props {
   textColor?: ContextColorsType;
   dense?: boolean;
   hint?: string;
-  errorMessages?: string[];
-  successMessages?: string[];
+  errorMessages?: string | string[];
+  successMessages?: string | string[];
   hideDetails?: boolean;
   prependIcon?: RuiIcons;
   appendIcon?: RuiIcons;
@@ -90,9 +92,11 @@ const prependWidth = computed(
 const appendWidth = computed(
   () => `${get(wrapperRight) - get(innerWrapperRight)}px`,
 );
-const hasError = computed(() => get(errorMessages).length > 0);
-const hasSuccess = computed(() => get(successMessages).length > 0);
-const hasMessages = logicOr(hasError, hasSuccess);
+
+const { hasError, hasSuccess, hasMessages } = useFormTextDetail(
+  errorMessages,
+  successMessages,
+);
 
 const css = useCssModule();
 const attrs = useAttrs();
@@ -182,35 +186,13 @@ const showClearIcon = logicAnd(
         </div>
       </div>
     </div>
-    <div v-if="!hideDetails" class="details pt-1 min-h-[1.5rem] px-3">
-      <TransitionGroup
-        enter-class="opacity-0 -translate-y-2 h-0"
-        enter-active-class="transform transition"
-        enter-to-class="opacity-100 translate-y-0"
-        leave-class="opacity-100 -translate-y-2"
-        leave-active-class="transform transition"
-        leave-to-class="opacity-0 -translate-y-2 h-0"
-        appear
-      >
-        <div v-if="hasError" key="error" class="text-rui-error text-caption">
-          {{ errorMessages[0] }}
-        </div>
-        <div
-          v-else-if="hasSuccess"
-          key="success"
-          class="text-rui-success text-caption"
-        >
-          {{ successMessages[0] }}
-        </div>
-        <div
-          v-else-if="hint"
-          key="hint"
-          class="text-rui-text-secondary text-caption"
-        >
-          {{ hint }}
-        </div>
-      </TransitionGroup>
-    </div>
+    <FormTextDetail
+      v-if="!hideDetails"
+      class="pt-1 px-3"
+      :error-messages="errorMessages"
+      :success-messages="successMessages"
+      :hint="hint"
+    />
   </div>
 </template>
 

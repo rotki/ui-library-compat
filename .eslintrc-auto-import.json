@@ -326,6 +326,7 @@
     "WritableComputedRef": true,
     "assert": true,
     "injectLocal": true,
-    "provideLocal": true
+    "provideLocal": true,
+    "useFormTextDetail": true
   }
 }

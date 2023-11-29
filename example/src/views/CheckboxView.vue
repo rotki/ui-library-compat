@@ -2,9 +2,7 @@
 import { type CheckboxProps, RuiCheckbox } from '@rotki/ui-library-compat';
 import { ref } from 'vue';
 
-type CheckboxData = CheckboxProps & {
-  value?: boolean;
-};
+type CheckboxData = CheckboxProps;
 
 const checkboxes = ref<CheckboxData[]>([
   { value: false, color: 'primary' },
@@ -67,12 +65,43 @@ const checkboxes = ref<CheckboxData[]>([
   {
     value: false,
     color: 'secondary',
-    errorMessages: ['Checkbox error message'],
+    errorMessages: 'Checkbox error message',
   },
   { value: false, color: 'error', errorMessages: ['Checkbox error message'] },
-  { value: false, color: 'warning', errorMessages: ['Checkbox error message'] },
+  { value: false, color: 'warning', errorMessages: 'Checkbox error message' },
   { value: false, color: 'info', errorMessages: ['Checkbox error message'] },
-  { value: false, color: 'success', errorMessages: ['Checkbox error message'] },
+  { value: false, color: 'success', errorMessages: 'Checkbox error message' },
+
+  {
+    value: false,
+    color: 'primary',
+    successMessages: ['Checkbox success message'],
+  },
+  {
+    value: false,
+    color: 'secondary',
+    successMessages: 'Checkbox success message',
+  },
+  {
+    value: false,
+    color: 'error',
+    successMessages: ['Checkbox success message'],
+  },
+  {
+    value: false,
+    color: 'warning',
+    successMessages: 'Checkbox success message',
+  },
+  {
+    value: false,
+    color: 'info',
+    successMessages: ['Checkbox success message'],
+  },
+  {
+    value: false,
+    color: 'success',
+    successMessages: 'Checkbox success message',
+  },
 ]);
 </script>
 
