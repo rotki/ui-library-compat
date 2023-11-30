@@ -4,7 +4,7 @@ import { type ContextColorsType } from '@/consts/colors';
 import Icon from '@/components/icons/Icon.vue';
 import FormTextDetail from '@/components/helpers/FormTextDetail.vue';
 
-export interface Props {
+export interface RadioProps {
   internalValue: string;
   value?: string;
   disabled?: boolean;
@@ -21,7 +21,7 @@ defineOptions({
   name: 'RuiRadio',
 });
 
-const props = withDefaults(defineProps<Props>(), {
+const props = withDefaults(defineProps<RadioProps>(), {
   value: '',
   disabled: false,
   color: undefined,
@@ -210,7 +210,7 @@ const { hasError, hasSuccess } = useFormTextDetail(
     @apply flex-1 text-rui-text;
 
     &:not(:empty) {
-      @apply mt-[9px];
+      @apply mt-[9px] mb-1;
     }
   }
 

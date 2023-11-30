@@ -32,7 +32,7 @@ import {
   default as RuiRadioGroup,
 } from '@/components/forms/radio-button/radio-group/RadioGroup.vue';
 import {
-  type Props as RadioProps,
+  type RadioProps,
   default as RuiRadio,
 } from '@/components/forms/radio-button/radio/Radio.vue';
 import { default as RuiRevealableTextField } from '@/components/forms/revealable-text-field/RevealableTextField.vue';

@@ -108,6 +108,15 @@ const clearIconClicked = () => {
 
 const input = ref();
 const { focused } = useFocus(input);
+const throttledFocused = ref(false);
+
+watchThrottled(
+  focused,
+  (focused) => {
+    set(throttledFocused, focused);
+  },
+  { throttle: 500 },
+);
 
 const showClearIcon = logicAnd(
   clearable,
@@ -167,13 +176,13 @@ const showClearIcon = logicAnd(
       <div class="flex items-center gap-1 shrink-0" :class="css.append">
         <RuiButton
           v-if="showClearIcon"
-          :class="{ hidden: !focused }"
+          :class="{ hidden: !throttledFocused }"
           variant="text"
           type="button"
           icon
           class="!p-2"
           :color="color"
-          @click.stop="clearIconClicked()"
+          @click="clearIconClicked()"
         >
           <RuiIcon name="close-line" size="20" />
         </RuiButton>

@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import VRender from '@/components/VRender';
 import FormTextDetail from '@/components/helpers/FormTextDetail.vue';
+import { type ContextColorsType } from '@/consts/colors';
+import type { RadioProps } from '@/components/forms/radio-button/radio/Radio.vue';
 
 export interface Props {
   value?: string;
@@ -9,19 +11,25 @@ export interface Props {
   errorMessages?: string | string[];
   successMessages?: string | string[];
   hideDetails?: boolean;
+  disabled?: boolean;
+  color?: ContextColorsType;
+  size?: 'sm' | 'lg';
 }
 
 defineOptions({
   name: 'RuiRadioGroup',
 });
 
-withDefaults(defineProps<Props>(), {
+const props = withDefaults(defineProps<Props>(), {
   value: '',
   inline: false,
   hint: '',
   errorMessages: () => [],
   successMessages: () => [],
   hideDetails: false,
+  disabled: false,
+  color: undefined,
+  size: undefined,
 });
 
 const emit = defineEmits<{
@@ -31,7 +39,27 @@ const emit = defineEmits<{
 const radioGroupName = ref('');
 
 const slots = useSlots();
-const children = computed(() => slots.default?.() ?? []);
+
+const { disabled, color } = toRefs(props);
+
+const children = computed(() =>
+  (slots.default?.() ?? []).map((node) => {
+    const propsData = (node.componentOptions?.propsData ?? {}) as RadioProps;
+
+    // if group is disabled, disable child buttons
+    if (get(disabled)) {
+      propsData.disabled = true;
+    }
+
+    const rootColor = get(color);
+    // if given root color, use it
+    if (rootColor) {
+      propsData.color = rootColor;
+    }
+
+    return { node, props: propsData };
+  }),
+);
 
 onMounted(() => {
   slots.default?.();
@@ -47,7 +75,9 @@ const css = useCssModule();
       <VRender
         v-for="(child, i) in children"
         :key="i"
-        :v-node="child"
+        :v-node="child.node"
+        v-bind="child.props"
+        :size="size"
         :value="value"
         hide-details
         :name="radioGroupName"
