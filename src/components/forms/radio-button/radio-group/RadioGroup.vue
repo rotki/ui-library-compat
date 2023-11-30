@@ -7,6 +7,7 @@ import type { RadioProps } from '@/components/forms/radio-button/radio/Radio.vue
 export interface Props {
   value?: string;
   inline?: boolean;
+  label?: string;
   hint?: string;
   errorMessages?: string | string[];
   successMessages?: string | string[];
@@ -23,6 +24,7 @@ defineOptions({
 const props = withDefaults(defineProps<Props>(), {
   value: '',
   inline: false,
+  label: '',
   hint: '',
   errorMessages: () => [],
   successMessages: () => [],
@@ -71,6 +73,9 @@ const css = useCssModule();
 
 <template>
   <div>
+    <div v-if="label" class="text-rui-text-secondary text-body-1">
+      {{ label }}
+    </div>
     <div :class="[css.wrapper, { [css.wrapper__inline]: inline }]">
       <VRender
         v-for="(child, i) in children"
