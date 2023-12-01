@@ -41,6 +41,10 @@ import {
   type Props as SimpleSelectProps,
 } from '@/components/forms/select/SimpleSelect.vue';
 import {
+  default as RuiTextArea,
+  type Props as TextAreaProps,
+} from '@/components/forms/text-area/TextArea.vue';
+import {
   default as RuiTextField,
   type Props as TextFieldProps,
 } from '@/components/forms/text-field/TextField.vue';
@@ -134,6 +138,7 @@ export {
   RuiTablePagination,
   RuiDivider,
   RuiSkeletonLoader,
+  RuiTextArea,
   ProgressProps,
   ChipProps,
   TextFieldProps,
@@ -163,4 +168,5 @@ export {
   TabItemProps,
   TablePaginationProps,
   SkeletonLoaderProps,
+  TextAreaProps,
 };

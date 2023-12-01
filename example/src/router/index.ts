@@ -56,6 +56,11 @@ const router = new VueRouter({
       component: () => import('@/views/TextFieldView.vue'),
     },
     {
+      path: '/text-areas',
+      name: 'text-areas',
+      component: () => import('@/views/TextAreaView.vue'),
+    },
+    {
       path: '/steppers',
       name: 'steppers',
       component: () => import('@/views/StepperView.vue'),

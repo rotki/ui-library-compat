@@ -21,13 +21,19 @@ export interface Props {
   successMessages?: string | string[];
   hideDetails?: boolean;
   prependIcon?: RuiIcons;
+  prependOuterIcon?: RuiIcons;
   appendIcon?: RuiIcons;
   readonly?: boolean;
   clearable?: boolean;
+  noResize?: boolean;
+  minRows?: number | string;
+  maxRows?: number | string;
+  rowHeight?: number | string;
+  autoGrow?: boolean;
 }
 
 defineOptions({
-  name: 'RuiTextField',
+  name: 'RuiTextArea',
   inheritAttrs: false,
 });
 
@@ -45,9 +51,15 @@ const props = withDefaults(defineProps<Props>(), {
   successMessages: () => [],
   hideDetails: false,
   prependIcon: undefined,
+  prependOuterIcon: undefined,
   appendIcon: undefined,
   readonly: false,
   clearable: false,
+  noResize: false,
+  minRows: 2,
+  rowHeight: 1.5, // in rems
+  maxRows: undefined,
+  autoGrow: false,
 });
 
 const emit = defineEmits<{
@@ -58,12 +70,23 @@ const emit = defineEmits<{
 const {
   label,
   value,
+  autoGrow,
   clearable,
   disabled,
   readonly,
+  minRows,
+  maxRows,
+  noResize,
+  rowHeight,
   errorMessages,
   successMessages,
 } = toRefs(props);
+
+const prepend = ref<HTMLDivElement>();
+const append = ref<HTMLDivElement>();
+const textarea = ref<HTMLTextAreaElement>();
+const textareaSizer = ref<HTMLTextAreaElement>();
+const focusedDebounced = ref(false);
 
 const labelWithQuote = computed(() => {
   const labelVal = get(label);
@@ -73,23 +96,47 @@ const labelWithQuote = computed(() => {
   return `'  ${get(label)}  '`;
 });
 
-const wrapper = ref<HTMLDivElement>();
-const innerWrapper = ref<HTMLDivElement>();
+const fieldStyles = computed(() => {
+  const height = Number(get(rowHeight));
+  const min = Number(get(minRows));
+  const max = Number(get(maxRows));
+  const value: { minHeight: string; maxHeight?: string } = {
+    minHeight: `${min * height + 0.75}rem`,
+  };
+
+  if (max) {
+    value.maxHeight = `${max * height + 0.75}rem`;
+  }
+
+  return value;
+});
 
 const internalValue = computed({
   get: () => get(value),
   set: (val: string) => emit('input', val),
 });
 
-const { left: wrapperLeft, right: wrapperRight } = useElementBounding(wrapper);
-const { left: innerWrapperLeft, right: innerWrapperRight } =
-  useElementBounding(innerWrapper);
+const prependWidth = computed(() => {
+  const width = get(useElementBounding(prepend).width);
+  if (!width) {
+    return '0rem';
+  }
+  return `${(width + 24) / 16}rem`;
+});
 
-const prependWidth = computed(
-  () => `${get(innerWrapperLeft) - get(wrapperLeft)}px`,
-);
-const appendWidth = computed(
-  () => `${get(wrapperRight) - get(innerWrapperRight)}px`,
+const appendWidth = computed(() => {
+  const width = get(useElementBounding(append).width);
+  if (!width) {
+    return '0rem';
+  }
+  return `${(width + 24) / 16}rem`;
+});
+
+const showClearIcon = logicAnd(
+  clearable,
+  internalValue,
+  logicNot(disabled),
+  logicNot(readonly),
 );
 
 const { hasError, hasSuccess, hasMessages } = useFormTextDetail(
@@ -106,9 +153,32 @@ const clearIconClicked = () => {
   emit('click:clear');
 };
 
-const input = ref();
-const { focused } = useFocus(input);
-const focusedDebounced = ref(false);
+const computeFieldHeight = (newVal?: string, oldVal?: string) => {
+  if (!get(autoGrow)) {
+    return;
+  }
+
+  const field = get(textarea);
+  const fieldValue = newVal ?? get(value);
+  const fieldSizer = get(textareaSizer);
+  if (!(field && fieldSizer)) {
+    return;
+  }
+
+  nextTick(() => {
+    field.style.minHeight = get(fieldStyles).minHeight;
+    const sizerHeight = fieldSizer.scrollHeight;
+    const fieldHeight = field.scrollHeight;
+    let height = `${Math.max(sizerHeight, fieldHeight) / 16}rem`;
+    if (oldVal && oldVal.length > fieldValue.length) {
+      height = `${Math.min(sizerHeight, fieldHeight) / 16}rem`;
+    }
+
+    field.style.height = height;
+  });
+};
+
+const { focused } = useFocus(textarea);
 
 watchDebounced(
   focused,
@@ -118,18 +188,14 @@ watchDebounced(
   { debounce: 500 },
 );
 
-const showClearIcon = logicAnd(
-  clearable,
-  internalValue,
-  logicNot(disabled),
-  logicNot(readonly),
-);
+watch(value, computeFieldHeight);
+
+onMounted(computeFieldHeight);
 </script>
 
 <template>
   <div>
     <div
-      ref="wrapper"
       :class="[
         css.wrapper,
         css[color],
@@ -146,6 +212,7 @@ const showClearIcon = logicAnd(
     >
       <div
         v-if="slots.prepend || prependIcon"
+        ref="prepend"
         class="flex items-center gap-1 shrink-0"
         :class="css.prepend"
       >
@@ -156,12 +223,23 @@ const showClearIcon = logicAnd(
           <Icon :name="prependIcon" />
         </div>
       </div>
-      <div ref="innerWrapper" class="flex flex-1 overflow-hidden">
-        <input
-          ref="input"
+      <div :class="css.inner_wrapper">
+        <textarea
+          v-if="autoGrow"
+          ref="textareaSizer"
+          :value="internalValue"
+          :class="[css.textarea_sizer]"
+          :style="fieldStyles"
+          aria-hidden="true"
+          disabled
+          readonly
+        />
+        <textarea
+          ref="textarea"
           v-model="internalValue"
           :placeholder="placeholder || ' '"
-          :class="css.input"
+          :class="[css.textarea, noResize ? 'resize-none' : 'resize-y']"
+          :style="fieldStyles"
           :disabled="disabled"
           :readonly="readonly"
           v-bind="objectOmit(attrs, ['class'])"
@@ -179,6 +257,7 @@ const showClearIcon = logicAnd(
       </div>
       <div
         v-if="slots.append || appendIcon || showClearIcon"
+        ref="append"
         class="flex items-center gap-1 shrink-0"
         :class="css.append"
       >
@@ -230,7 +309,7 @@ const showClearIcon = logicAnd(
     }
 
     &.filled {
-      .input {
+      .textarea {
         &:focus {
           + .label {
             @apply bg-white/[0.13];
@@ -248,7 +327,7 @@ const showClearIcon = logicAnd(
         @apply border-white/[0.23];
       }
 
-      .input {
+      .textarea {
         &:focus {
           ~ .fieldset {
             @apply border-white;
@@ -260,10 +339,28 @@ const showClearIcon = logicAnd(
 }
 
 .wrapper {
-  @apply relative w-full min-w-[12.5rem] flex items-center pt-3;
+  @apply relative w-full min-w-[12.5rem] flex items-start;
 
-  .input {
-    @apply leading-6 text-rui-text w-full bg-transparent py-1.5 pr-3 outline-0 outline-none transition-all placeholder:opacity-0 focus:placeholder:opacity-100;
+  .inner_wrapper {
+    @apply flex flex-1 pt-4;
+  }
+
+  .append {
+    @apply absolute right-0;
+  }
+
+  .textarea {
+    @apply leading-6 text-rui-text w-full bg-transparent pb-2 pt-0;
+    @apply outline-0 outline-none placeholder:opacity-0 focus:placeholder:opacity-100;
+
+    --x-padding: 0.75rem;
+    padding-right: calc(var(--x-padding) + v-bind(appendWidth)) !important;
+
+    &_sizer {
+      @apply invisible absolute top-0 left-0 w-full h-0 -z-10 pointer-events-none py-2 px-3 #{!important};
+
+      padding-right: calc(var(--x-padding) + v-bind(appendWidth)) !important;
+    }
 
     &:focus {
       @apply outline-0;
@@ -299,14 +396,12 @@ const showClearIcon = logicAnd(
   }
 
   .label {
-    @apply left-0 text-base leading-[3.75] text-rui-text-secondary pointer-events-none absolute top-0 flex h-full w-full select-none transition-all border-b border-black/[0.42];
+    @apply left-0 text-base leading-[3.2] text-rui-text-secondary pointer-events-none absolute top-0 flex h-full w-full select-none transition-all border-b border-black/[0.42];
 
-    --x-padding: 0px;
-    --prepend-width: v-bind(prependWidth);
-    --append-width: v-bind(appendWidth);
+    --x-padding: 0rem;
 
-    padding-left: calc(var(--x-padding) + var(--prepend-width, 0px));
-    padding-right: calc(var(--x-padding) + var(--append-width, 0px));
+    padding-left: calc(var(--x-padding) + v-bind(prependWidth));
+    padding-right: calc(var(--x-padding) + v-bind(appendWidth));
 
     &:after {
       content: '';
@@ -318,21 +413,18 @@ const showClearIcon = logicAnd(
     @apply text-black/[0.54];
   }
 
-  .prepend {
-    &:not(:empty) {
-      @apply mr-2;
-    }
-  }
-
+  .prepend,
   .append {
-    &:not(:empty) {
-      @apply ml-2;
+    @apply mt-4 mx-3;
+
+    .textarea {
+      --x-padding: 0rem;
     }
   }
 
   @each $color in c.$context-colors {
     &.#{$color} {
-      .input {
+      .textarea {
         &:focus {
           + .label {
             @apply text-rui-#{$color};
@@ -345,7 +437,7 @@ const showClearIcon = logicAnd(
       }
 
       &.outlined {
-        .input {
+        .textarea {
           &:focus {
             ~ .fieldset {
               @apply border-rui-#{$color};
@@ -359,7 +451,7 @@ const showClearIcon = logicAnd(
     &.with-#{$color} {
       .prepend,
       .append,
-      .input {
+      .textarea {
         @apply text-rui-#{$color};
       }
 
@@ -372,7 +464,7 @@ const showClearIcon = logicAnd(
 
   @each $color in 'error', 'success' {
     &.with-#{$color} {
-      .input {
+      .textarea {
         @apply border-rui-#{$color} #{!important};
       }
 
@@ -387,96 +479,71 @@ const showClearIcon = logicAnd(
   }
 
   &.dense {
-    .input {
-      @apply py-1;
-    }
+    .inner_wrapper {
+      @apply pt-2;
 
-    .label {
-      @apply leading-[3.5];
+      .textarea {
+        @apply py-1;
+        &_sizer {
+          @apply py-1;
+        }
+      }
     }
   }
 
   &.filled,
   &.outlined {
-    @apply pt-0;
+    .textarea {
+      @apply px-3;
+    }
 
     .prepend {
-      &:not(:empty) {
-        @apply ml-3 mr-0;
+      @apply mr-0;
+
+      + .inner_wrapper .textarea {
+        &:not(:placeholder-shown),
+        &:autofill,
+        &:-webkit-autofill,
+        &[data-has-value='true'],
+        &:focus {
+          + .label {
+            --x-padding: 0.75rem;
+          }
+        }
       }
     }
 
     .append {
-      &:not(:empty) {
-        @apply mr-3 ml-0;
+      @apply ml-0;
+    }
+
+    .prepend,
+    .append {
+      + .inner_wrapper > .label {
+        --x-padding: 0rem;
       }
     }
 
-    .input {
-      @apply px-3;
-    }
-
     .label {
-      @apply leading-[3.5];
       --x-padding: 0.75rem;
     }
   }
 
   &.filled {
-    .input {
-      @apply py-4;
-
-      &:focus {
-        + .label {
-          @apply bg-black/[0.09];
-        }
-      }
-
-      &:not(:placeholder-shown),
-      &:autofill,
-      &:-webkit-autofill,
-      &[data-has-value='true'],
-      &:focus {
-        + .label {
-          @apply leading-[1.5] pl-4;
-
-          padding-left: calc(var(--x-padding));
-          padding-right: calc(var(--x-padding));
-        }
-      }
-    }
-
     .label {
       @apply rounded-t bg-black/[0.06];
     }
 
-    &.dense {
-      .input {
-        @apply pt-5 pb-1;
-      }
-
-      .label {
-        @apply leading-[3];
-      }
-
-      &:not(:placeholder-shown),
-      &:autofill,
-      &:-webkit-autofill,
-      &[data-has-value='true'],
-      &:focus {
-        + .label {
-          @apply leading-[2.25];
-        }
-      }
-    }
-
     &.no-label {
-      .input {
+      .textarea {
         @apply py-4;
+        &_sizer {
+          @apply py-4;
+        }
       }
 
       &.dense {
-        .input {
+        .textarea {
           @apply py-3;
         }
       }
@@ -484,9 +551,7 @@ const showClearIcon = logicAnd(
   }
 
   &.outlined {
-    .input {
-      @apply py-4 border-b-0;
-
+    .textarea {
       &:focus {
         ~ .fieldset {
           @apply border-2 border-black;
@@ -536,10 +601,6 @@ const showClearIcon = logicAnd(
     }
 
     &.dense {
-      .input {
-        @apply py-2;
-      }
-
       .label {
         @apply leading-[2.5];
       }
