@@ -100,6 +100,7 @@ const style: ComputedRef<Partial<CSSStyleDeclaration>> = computed(() => {
       v-if="closeable"
       :class="css.chip__close"
       :disabled="disabled"
+      type="button"
       @click.stop="emit('click:close')"
     >
       <Icon
