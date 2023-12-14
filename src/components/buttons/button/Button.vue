@@ -10,7 +10,7 @@ export interface ButtonProps {
   color?: ContextColorsType;
   rounded?: boolean;
   elevation?: number | string | null;
-  variant?: 'default' | 'outlined' | 'text' | 'fab';
+  variant?: 'default' | 'outlined' | 'text' | 'fab' | 'list';
   icon?: boolean;
   active?: boolean;
   size?: 'sm' | 'lg';
@@ -97,6 +97,7 @@ const slots = useSlots();
         [css._rounded]: rounded,
         [css.icon]: icon,
         [css.active]: active,
+        [css.text]: variant === 'list',
       },
     ]"
     :disabled="disabled || loading"
@@ -267,6 +268,10 @@ const slots = useSlots();
     &.sm {
       @apply py-1.5 px-2;
     }
+  }
+
+  &.list {
+    @apply p-3 rounded-none w-full justify-start text-left;
   }
 
   &.icon {
