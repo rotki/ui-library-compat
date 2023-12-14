@@ -119,42 +119,42 @@ const chips = ref<ChipProps[]>([
     color: 'primary',
     variant: 'filled',
     closeable: false,
-    label: true,
+    tile: true,
   },
   {
     disabled: false,
     color: 'secondary',
     variant: 'filled',
     closeable: false,
-    label: true,
+    tile: true,
   },
   {
     disabled: false,
     color: 'error',
     variant: 'filled',
     closeable: false,
-    label: true,
+    tile: true,
   },
   {
     disabled: false,
     color: 'warning',
     variant: 'filled',
     closeable: false,
-    label: true,
+    tile: true,
   },
   {
     disabled: false,
     color: 'info',
     variant: 'filled',
     closeable: false,
-    label: true,
+    tile: true,
   },
   {
     disabled: false,
     color: 'success',
     variant: 'filled',
     closeable: false,
-    label: true,
+    tile: true,
   },
 
   {
@@ -162,7 +162,7 @@ const chips = ref<ChipProps[]>([
     color: 'primary',
     variant: 'filled',
     closeable: false,
-    label: true,
+    tile: true,
     clickable: true,
   },
   {
@@ -170,7 +170,7 @@ const chips = ref<ChipProps[]>([
     color: 'secondary',
     variant: 'filled',
     closeable: false,
-    label: true,
+    tile: true,
     clickable: true,
   },
   {
@@ -178,7 +178,7 @@ const chips = ref<ChipProps[]>([
     color: 'error',
     variant: 'filled',
     closeable: false,
-    label: true,
+    tile: true,
     clickable: true,
   },
   {
@@ -186,7 +186,7 @@ const chips = ref<ChipProps[]>([
     color: 'warning',
     variant: 'filled',
     closeable: false,
-    label: true,
+    tile: true,
     clickable: true,
   },
   {
@@ -194,7 +194,7 @@ const chips = ref<ChipProps[]>([
     color: 'info',
     variant: 'filled',
     closeable: false,
-    label: true,
+    tile: true,
     clickable: true,
   },
   {
@@ -202,7 +202,7 @@ const chips = ref<ChipProps[]>([
     color: 'success',
     variant: 'filled',
     closeable: false,
-    label: true,
+    tile: true,
     clickable: true,
   },
   {
