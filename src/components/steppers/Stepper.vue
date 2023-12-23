@@ -24,7 +24,7 @@ defineOptions({
 });
 
 const props = withDefaults(defineProps<Props>(), {
-  step: 0,
+  step: undefined,
   iconTop: false,
   custom: false,
   titleClass: '',
@@ -39,12 +39,14 @@ const { custom, steps, step, orientation, keepActiveVisible } = toRefs(props);
 
 // automatically set step state to custom stepper.
 const renderedStep = computed(() => {
-  if (!get(custom)) {
-    return get(steps);
+  const currentStep = get(step);
+  const stepsVal = get(steps);
+
+  if (!isDefined(currentStep)) {
+    return stepsVal;
   }
 
-  const currentStep = get(step);
-  return get(steps).map((text, index) => {
+  return stepsVal.map((text, index) => {
     let stepStatus: StepperState = StepperState.inactive;
 
     if (index + 1 === currentStep) {
