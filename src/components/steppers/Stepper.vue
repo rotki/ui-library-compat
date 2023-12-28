@@ -6,6 +6,7 @@ import {
 } from '@/types/stepper';
 import StepperIcon from '@/components/steppers/StepperIcon.vue';
 import StepperCustomIcon from '@/components/steppers/StepperCustomIcon.vue';
+import Progress from '@/components/progress/Progress.vue';
 
 export interface Props {
   step?: number;
@@ -94,7 +95,9 @@ watch(step, () => {
     ]"
     class="no-scrollbar overflow-auto"
   >
-    <template v-for="({ title, description, state }, index) in renderedStep">
+    <template
+      v-for="({ title, description, state, loading }, index) in renderedStep"
+    >
       <hr v-if="index > 0" :key="index + 'hr'" :class="css.divider" />
       <div
         :key="index + 'step'"
@@ -107,8 +110,23 @@ watch(step, () => {
         ]"
       >
         <slot name="icon" v-bind="{ state, index: index + 1 }">
-          <StepperCustomIcon v-if="custom" :index="index + 1" :state="state" />
-          <StepperIcon v-else :index="index + 1" :state="state" />
+          <div class="relative flex py-2">
+            <StepperCustomIcon
+              v-if="custom"
+              :index="index + 1"
+              :state="state"
+            />
+            <StepperIcon v-else :index="index + 1" :state="state" />
+            <Progress
+              v-if="loading"
+              class="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2"
+              size="32"
+              variant="indeterminate"
+              circular
+              thickness="2"
+              color="primary"
+            />
+          </div>
         </slot>
         <div v-if="title || description" :class="css.label">
           <span

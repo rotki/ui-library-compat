@@ -77,10 +77,6 @@ import {
   type Props as StepperProps,
 } from '@/components/steppers/Stepper.vue';
 import {
-  default as RuiStepperIcon,
-  type Props as StepperIconProps,
-} from '@/components/steppers/StepperIcon.vue';
-import {
   type TableColumn as DataTableColumn,
   type TableOptions as DataTableOptions,
   type Props as DataTableProps,
@@ -133,7 +129,6 @@ export {
   RuiRadioGroup,
   RuiRevealableTextField,
   RuiStepper,
-  RuiStepperIcon,
   RuiTextField,
   RuiTooltip,
   RuiDataTable,
@@ -170,7 +165,6 @@ export {
   RadioProps,
   LogoProps,
   StepperProps,
-  StepperIconProps,
   IconProps,
   FooterStepperProps,
   TabsProps,
