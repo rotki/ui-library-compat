@@ -39,6 +39,6 @@ describe('Simple select', () => {
         disabled: true,
       },
     });
-    expect(wrapper.find('select[disabled').exists()).toBeTruthy();
+    expect(wrapper.find('select[disabled]').exists()).toBeTruthy();
   });
 });
