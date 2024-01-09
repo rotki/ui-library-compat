@@ -159,7 +159,7 @@ const applyNewValue = (onlyLink = false) => {
     (child) => !(child.node.componentOptions?.propsData as TabProps).disabled,
   );
   if (enabledChildren.length > 0) {
-    let newValue: string | number = 0;
+    let newValue: string | number = get(value) || 0;
     enabledChildren.forEach((child, index) => {
       const props = child.node.componentOptions?.propsData as TabProps;
       if (!onlyLink && index === 0 && props.tabValue) {
