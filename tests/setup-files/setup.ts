@@ -1,7 +1,7 @@
 // setup.js file
 import { vi } from 'vitest';
 import { ref } from 'vue';
-import * as Icons from '../../src/all-icons';
+import * as Icons from '../../src/icons';
 import { useIcons } from '../../src/composables';
 
 const { registerIcons } = useIcons();

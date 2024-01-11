@@ -1,5 +1,5 @@
 import { createRui } from '../src';
-import * as Icons from '../src/all-icons';
+import * as Icons from '../src/icons';
 import Vue, { ref } from 'vue';
 
 const RuiPlugin = createRui({
