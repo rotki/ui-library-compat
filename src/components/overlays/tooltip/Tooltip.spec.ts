@@ -3,18 +3,7 @@ import { mount } from '@vue/test-utils';
 import Vue from 'vue';
 import Button from '@/components/buttons/button/Button.vue';
 import Tooltip from '@/components/overlays/tooltip/Tooltip.vue';
-import { createTeleport } from '@/components/overlays/teleport-container';
-
-const TeleportPlugin = {
-  install() {
-    const teleport = createTeleport();
-    Object.defineProperty(Vue.prototype, '$teleport', {
-      get() {
-        return teleport;
-      },
-    });
-  },
-};
+import { TeleportPlugin } from '@/components/overlays/teleport-container';
 
 function createWrapper(options?: any) {
   Vue.use(TeleportPlugin);

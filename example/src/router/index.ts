@@ -1,3 +1,4 @@
+/* eslint-disable import/max-dependencies */
 import VueRouter from 'vue-router';
 import Vue from 'vue';
 import ButtonView from '@/views/ButtonView.vue';
@@ -95,6 +96,11 @@ const router = new VueRouter({
       path: '/tooltips',
       name: 'tooltips',
       component: () => import('@/views/TooltipView.vue'),
+    },
+    {
+      path: '/menus',
+      name: 'menus',
+      component: () => import('@/views/MenuView.vue'),
     },
     {
       path: '/data-tables',

@@ -93,3 +93,14 @@ export function createTeleport(tag: string = 'DIV', id = generateId('rui-telepor
     },
   });
 }
+
+export const TeleportPlugin = {
+  install() {
+    const teleport = createTeleport();
+    Object.defineProperty(Vue.prototype, '$teleport', {
+      get() {
+        return teleport;
+      },
+    });
+  },
+};
