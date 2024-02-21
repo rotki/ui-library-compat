@@ -30,8 +30,6 @@ function delay(time: number = 100) {
 }
 
 describe('menu', () => {
-  const text = 'Menu content';
-
   it('renders properly', async () => {
     const wrapper = createWrapper();
 
@@ -138,7 +136,7 @@ describe('menu', () => {
     await delay(100);
     expect(document.body.innerHTML).not.toMatch(new RegExp(text));
     await delay(500);
-    expect(document.body.innerHTML).not.toMatch(new RegExp(text));
+    expect(document.body.innerHTML).toMatch(new RegExp(text));
 
     wrapper.destroy();
   });
