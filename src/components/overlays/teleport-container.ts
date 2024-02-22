@@ -14,77 +14,80 @@ function createTeleportNode(tag: string, selector: string) {
 
 type Slot = (...args: any[]) => VNode[];
 
-const TeleportContainer = Vue.extend({
-  computed: {
-    vNodes() {
-      const nodes: VNode[] = [];
-      for (const tp in this.children) {
-        const slotContent = this.children[tp];
-        if (!slotContent)
-          continue;
+function createTeleportContainer() {
+  const proxy = getCurrentInstance()?.proxy;
+  return Vue.extend({
+    computed: {
+      vNodes() {
+        const nodes: VNode[] = [];
+        for (const tp in this.children) {
+          const slotContent = this.children[tp];
+          if (!slotContent)
+            continue;
 
-        const children
-          = typeof slotContent === 'function' ? slotContent() : slotContent;
+          const children
+            = typeof slotContent === 'function' ? slotContent() : slotContent;
 
-        for (const [i, child] of children.entries()) {
-          child.key = `${tp}-${i}`;
-          nodes.push(child);
+          for (const [i, child] of children.entries()) {
+            child.key = `${tp}-${i}`;
+            nodes.push(child);
+          }
         }
-      }
-      return nodes;
+        return nodes;
+      },
     },
-  },
-  data() {
-    const children: Record<string, VNode[] | Slot> = {};
-    return {
-      children,
-    };
-  },
-  destroyed() {
-    this.$el?.parentNode?.removeChild(this.$el);
-  },
-  methods: {
-    clearNodes(to: string) {
-      const { [to]: rem, ...children } = this.children;
-      this.children = children;
-    },
-    updateNodes(to: string, children: VNode[] | Slot) {
-      this.children = {
-        ...this.children,
-        [to]: children,
+    data() {
+      const children: Record<string, VNode[] | Slot> = {};
+      return {
+        children,
       };
     },
-  },
-  name: 'RuiTeleportContainer',
-  props: {
-    id: { required: true, type: String },
-    tag: { default: 'DIV', required: false, type: String },
-  },
-  render(h): VNode {
-    const nodes = this.vNodes;
-    if (!nodes || nodes.length === 0) {
-      return h(this.tag, {
-        attrs: {
-          id: this.id,
-        },
-      });
-    }
-
-    return h(
-      this.tag,
-      {
-        attrs: {
-          id: this.id,
-        },
+    destroyed() {
+      this.$el?.parentNode?.removeChild(this.$el);
+    },
+    methods: {
+      clearNodes(to: string) {
+        const { [to]: rem, ...children } = this.children;
+        this.children = children;
       },
-      nodes,
-    );
-  },
-});
+      updateNodes(to: string, children: VNode[] | Slot) {
+        this.children = {
+          ...this.children,
+          [to]: children,
+        };
+      },
+    },
+    name: 'RuiTeleportContainer',
+    parent: proxy,
+    props: {
+      id: { required: true, type: String },
+      tag: { default: 'DIV', required: false, type: String },
+    },
+    render(h): VNode {
+      const nodes = this.vNodes;
+      if (!nodes || nodes.length === 0) {
+        return h(this.tag, {
+          attrs: {
+            id: this.id,
+          },
+        });
+      }
 
-export default TeleportContainer;
+      return h(
+        this.tag,
+        {
+          attrs: {
+            id: this.id,
+          },
+        },
+        nodes,
+      );
+    },
+  });
+}
 
 export function createTeleport(tag: string = 'DIV', id = generateId('rui-teleport-container')) {
+  const TeleportContainer = createTeleportContainer();
   return new TeleportContainer({
     el: createTeleportNode(get(tag), `#${id}`),
     propsData: {
@@ -96,6 +99,9 @@ export function createTeleport(tag: string = 'DIV', id = generateId('rui-telepor
 
 export const TeleportPlugin = {
   install() {
+    if (Vue.prototype.$teleport)
+      return;
+
     const teleport = createTeleport();
     Object.defineProperty(Vue.prototype, '$teleport', {
       get() {

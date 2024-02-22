@@ -1,7 +1,7 @@
-import Vue, { type VueConstructor, provide } from 'vue';
+import { type VueConstructor, provide } from 'vue';
 import { isClient } from '@vueuse/core';
 import { StepperState } from '@/types/stepper';
-import { createTeleport } from '@/components/overlays/teleport-container';
+import { TeleportPlugin } from '@/components/overlays/teleport-container';
 import {
   type TableOptions,
   TableSymbol,
@@ -39,12 +39,7 @@ function installTeleport() {
   if (!isClient)
     return;
 
-  const teleport = createTeleport();
-  Object.defineProperty(Vue.prototype, '$teleport', {
-    get() {
-      return teleport;
-    },
-  });
+  TeleportPlugin.install();
 }
 
 export function createRui(options: RuiOptions = {}) {
@@ -54,12 +49,12 @@ export function createRui(options: RuiOptions = {}) {
     const { registerIcons } = useIcons();
     registerIcons(theme?.icons || []);
     useRotkiTheme().init({ ...theme });
-    installTeleport();
   };
 
   const setupProvide = () => {
     const tableDefaults = createTableDefaults(options.defaults?.table);
     provide(TableSymbol, tableDefaults);
+    installTeleport();
   };
 
   return {
