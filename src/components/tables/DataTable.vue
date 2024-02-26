@@ -4,6 +4,7 @@ import Button from '@/components/buttons/button/Button.vue';
 import Icon from '@/components/icons/Icon.vue';
 import Tooltip from '@/components/overlays/tooltip/Tooltip.vue';
 import ExpandButton from '@/components/tables/ExpandButton.vue';
+import { getNestedValue } from '@/utils/object';
 import TablePagination, { type TablePaginationData } from './TablePagination.vue';
 import TableHead, { type SortColumn, type TableColumn, type TableRow, type TableRowKey, type TableSortData } from './TableHead.vue';
 import type { ComputedRef, Ref } from 'vue';
@@ -434,16 +435,19 @@ const sorted: ComputedRef<TableRow[]> = computed(() => {
       if (!column)
         return 0;
 
+      const stringColumn = typeof column === 'string';
+      const aValue = stringColumn ? getNestedValue(a, column) : a[column];
+      const bValue = stringColumn ? getNestedValue(b, column) : b[column];
       if (by.direction === 'desc') {
-        return `${b[column]}`.localeCompare(
-          `${a[column]}`,
+        return `${bValue}`.localeCompare(
+          `${aValue}`,
           undefined,
           sortOptions,
         );
       }
 
-      return `${a[column]}`.localeCompare(
-        `${b[column]}`,
+      return `${aValue}`.localeCompare(
+        `${bValue}`,
         undefined,
         sortOptions,
       );
