@@ -123,6 +123,10 @@ import {
   default as RuiSwitch,
   type Props as SwitchProps,
 } from '@/components/forms/switch/RuiSwitch.vue';
+import {
+  default as RuiSlider,
+  type Props as SliderProps,
+} from '@/components/forms/slider/Slider.vue';
 import type {
   TableColumn as DataTableColumn,
   SortColumn as DataTableSortColumn,
@@ -161,6 +165,7 @@ export {
   RuiTextArea,
   RuiTableRowExpander,
   RuiSwitch,
+  RuiSlider,
   RuiMenuSelect,
   ProgressProps,
   ChipProps,
@@ -196,5 +201,6 @@ export {
   ExpandButtonProps,
   DataTableSortData,
   SwitchProps,
+  SliderProps,
   MenuSelectProps,
 };

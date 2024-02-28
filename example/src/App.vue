@@ -17,6 +17,7 @@ const navigation = ref([
       { to: { name: 'radios' }, title: 'Radio' },
       { to: { name: 'text-fields' }, title: 'Text Fields' },
       { to: { name: 'text-areas' }, title: 'Text Areas' },
+      { to: { name: 'sliders' }, title: 'Sliders' },
       { to: { name: 'steppers' }, title: 'Steppers' },
       { to: { name: 'progress' }, title: 'Progress' },
       { to: { name: 'loaders' }, title: 'Loaders' },

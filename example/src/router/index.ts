@@ -68,6 +68,11 @@ const router = new VueRouter({
       component: () => import('@/views/TextAreaView.vue'),
     },
     {
+      path: '/sliders',
+      name: 'sliders',
+      component: () => import('@/views/SliderView.vue'),
+    },
+    {
       path: '/steppers',
       name: 'steppers',
       component: () => import('@/views/StepperView.vue'),
