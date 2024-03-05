@@ -127,6 +127,14 @@ import {
   default as RuiSlider,
   type Props as SliderProps,
 } from '@/components/forms/slider/Slider.vue';
+import {
+  type Props as AccordionsProps,
+  default as RuiAccordions,
+} from '@/components/accordions/accordions/Accordions.vue';
+import {
+  type AccordionProps,
+  default as RuiAccordion,
+} from '@/components/accordions/accordion/Accordion.vue';
 import type {
   TableColumn as DataTableColumn,
   SortColumn as DataTableSortColumn,
@@ -167,6 +175,8 @@ export {
   RuiSwitch,
   RuiSlider,
   RuiMenuSelect,
+  RuiAccordions,
+  RuiAccordion,
   ProgressProps,
   ChipProps,
   TextFieldProps,
@@ -203,4 +213,6 @@ export {
   SwitchProps,
   SliderProps,
   MenuSelectProps,
+  AccordionsProps,
+  AccordionProps,
 };

@@ -27,13 +27,7 @@ function createWrapper(options?: any) {
 
 describe('tabs/Tabs', () => {
   it('renders properly', async () => {
-    const value = ref();
-    const wrapper = createWrapper({
-      propsData: {
-        input: (e: any) => set(value, e),
-        value,
-      },
-    });
+    const wrapper = createWrapper();
 
     await nextTick();
 
