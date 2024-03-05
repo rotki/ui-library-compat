@@ -20,7 +20,7 @@ const error = ref(false);
 </script>
 
 <template>
-  <div class="h-12 space-x-4 flex items-center relative">
+  <div class="h-12 space-x-4 flex items-center">
     <img
       v-if="customSrc && !error"
       class="h-full"
