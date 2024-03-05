@@ -65,7 +65,7 @@ const slots = useSlots();
     </div>
     <div
       v-if="open || eager"
-      :class="[contentClass, css.content]"
+      :class="[contentClass, css.accordion__content]"
       class="accordion__content"
     >
       <div
