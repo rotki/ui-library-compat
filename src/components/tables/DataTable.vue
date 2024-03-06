@@ -313,6 +313,12 @@ const selectedData = computed({
   },
 });
 
+const internalSelectedData: Ref<TableRow[TableRowKey][]> = ref([]);
+
+watchImmediate(value, (value) => {
+  set(internalSelectedData, value);
+});
+
 const internalPaginationState: Ref<TablePaginationData | undefined> = ref();
 const collapsedRows: Ref<TableRow[]> = ref([]);
 
@@ -366,6 +372,7 @@ const sortData = computed({
   },
   set(value) {
     onToggleAll(false);
+    resetCheckboxShiftState();
     emit('update:sort', value);
     emit('update:options', {
       sort: value,
@@ -769,24 +776,87 @@ function onToggleAll(checked: boolean) {
   }
 }
 
+const shiftClicked: Ref<boolean> = ref(false);
+const lastSelectedIndex: Ref<number> = ref(-1);
+
+function resetCheckboxShiftState() {
+  set(shiftClicked, false);
+  set(lastSelectedIndex, -1);
+}
+
 /**
  * toggles a single row
  * @param {boolean} checked checkbox state
  * @param {string} value the id of the selected row
+ * @param {number} index the index of the selected row
+ * @param {boolean} userAction whether the select triggered by user manually
+ *
  */
-function onSelect(checked: boolean, value: string) {
-  const selectedRows = get(selectedData);
+function onSelect(checked: boolean, value: string, index: number, userAction = false) {
+  if (get(shiftClicked) && userAction)
+    return;
+
+  const selectedRows = get(internalSelectedData);
   if (!selectedRows)
     return false;
 
-  if (checked) {
-    set(selectedData, [...selectedRows, value]);
+  const selected = isSelected(value);
+
+  if (checked && !selected) {
+    set(internalSelectedData, [...selectedRows, value]);
   }
-  else {
+  else if (!checked && selected) {
     set(
-      selectedData,
+      internalSelectedData,
       [...selectedRows].filter(r => r !== value),
     );
+  }
+
+  if (userAction)
+    set(selectedData, get(internalSelectedData));
+}
+
+function onCheckboxClick(event: any, value: string, index: number) {
+  const input = event.currentTarget.querySelector('input');
+  const nodeName = event.target.nodeName;
+
+  const shiftKey = event.shiftKey;
+  set(shiftClicked, shiftKey);
+
+  if (input && nodeName !== 'INPUT') {
+    if (shiftKey) {
+      setTimeout(() => {
+        let lastIndex = get(lastSelectedIndex);
+        if (lastIndex === -1)
+          lastIndex = index;
+        const tableData = get(filtered);
+        const lastSelectedData = tableData[lastIndex];
+
+        if (isRow(lastSelectedData)) {
+          const id = get(rowAttr);
+          const valueToApply = isSelected(lastSelectedData[id]);
+
+          if (lastIndex === index) {
+            onSelect(!valueToApply, value, index);
+          }
+          else {
+            const from = Math.min(lastIndex, index);
+            const to = Math.max(lastIndex, index);
+
+            for (let i = from; i <= to; i++) {
+              const currSelectedData = tableData[i];
+              if (isRow(currSelectedData))
+                onSelect(valueToApply, currSelectedData[id], i);
+            }
+          }
+
+          set(lastSelectedIndex, index);
+          set(selectedData, get(internalSelectedData));
+        }
+      }, 1);
+    }
+
+    else { set(lastSelectedIndex, index); }
   }
 }
 
@@ -812,6 +882,7 @@ function onPaginate() {
   emit('update:expanded', []);
   scrollToTop();
   onToggleAll(false);
+  resetCheckboxShiftState();
 }
 
 function setInternalTotal(items: GroupedTableRow<TableRow>[]) {
@@ -850,6 +921,7 @@ watch(search, () => {
     page: 1,
   });
   onToggleAll(false);
+  resetCheckboxShiftState();
 });
 
 watch(sorted, setInternalTotal);
@@ -1034,8 +1106,10 @@ onMounted(() => {
                     :disabled="isDisabledRow(row[rowAttr])"
                     :size="dense ? 'sm' : undefined"
                     color="primary"
+                    class="select-none"
                     hide-details
-                    @input="onSelect($event, row[rowAttr])"
+                    @input="onSelect($event, row[rowAttr], index, true)"
+                    @click="onCheckboxClick($event, row[rowAttr], index)"
                   />
                 </td>
 

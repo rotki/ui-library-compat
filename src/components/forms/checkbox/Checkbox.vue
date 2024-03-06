@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import { objectOmit, objectPick } from '@vueuse/shared';
 import { getNonRootAttrs, getRootAttrs } from '@/utils/helpers';
 import Icon from '@/components/icons/Icon.vue';
 import FormTextDetail from '@/components/helpers/FormTextDetail.vue';
@@ -83,6 +84,10 @@ const { hasError, hasSuccess } = useFormTextDetail(
           [css.disabled]: disabled,
         },
       ]"
+      v-on="
+        // eslint-disable-next-line vue/no-deprecated-dollar-listeners-api
+        objectPick($listeners, ['click'])
+      "
     >
       <input
         :checked="value"
@@ -91,6 +96,10 @@ const { hasError, hasSuccess } = useFormTextDetail(
         type="checkbox"
         v-bind="getNonRootAttrs(attrs)"
         @input="input($event.target)"
+        v-on="
+          // eslint-disable-next-line vue/no-deprecated-dollar-listeners-api
+          objectOmit($listeners, ['input', 'click'])
+        "
       />
       <span
         :class="[
