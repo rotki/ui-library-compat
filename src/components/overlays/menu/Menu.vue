@@ -19,6 +19,7 @@ export interface MenuProps {
   successMessages?: string | string[];
   showDetails?: boolean;
   dense?: boolean;
+  persistent?: boolean;
 }
 
 defineOptions({
@@ -39,6 +40,7 @@ const props = withDefaults(defineProps<MenuProps>(), {
   hint: undefined,
   errorMessages: () => [],
   successMessages: () => [],
+  persistent: false,
 });
 
 const emit = defineEmits<{
@@ -47,7 +49,18 @@ const emit = defineEmits<{
 
 const css = useCssModule();
 
-const { value, closeDelay, openDelay, popper, disabled, closeOnContentClick, openOnHover, errorMessages, successMessages } = toRefs(props);
+const {
+  value,
+  closeDelay,
+  openDelay,
+  popper,
+  disabled,
+  closeOnContentClick,
+  openOnHover,
+  errorMessages,
+  successMessages,
+  persistent,
+} = toRefs(props);
 
 const {
   reference: activator,
@@ -94,7 +107,7 @@ watch(open, (open) => {
 });
 
 onClickOutside(menu, () => {
-  if (get(open))
+  if (get(open) && !get(persistent))
     onLeave();
 }, { ignore: [activator] });
 
