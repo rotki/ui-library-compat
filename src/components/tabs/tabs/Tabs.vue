@@ -59,7 +59,7 @@ const children = computed(() => {
         || tab.componentOptions?.propsData
         || {}) as TabProps;
 
-      let tabValue: string | number = index;
+      let tabValue: string | number = propsData?.tabValue ?? index;
       if (propsData.link !== false && propsData.to)
         tabValue = propsData.to;
 
@@ -68,7 +68,7 @@ const children = computed(() => {
       const newProps = {
         ...inheritedProps,
         ...propsData,
-        tabValue: propsData?.tabValue ?? tabValue,
+        tabValue,
         active,
       };
 
