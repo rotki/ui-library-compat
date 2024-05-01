@@ -142,7 +142,7 @@ function onClick(index: number) {
 
 <style lang="scss" module>
 .footer-stepper {
-  @apply flex items-center justify-between transition-all duration-150;
+  @apply flex items-center justify-between gap-x-4 transition-all duration-150;
 
   .numeric {
     @apply text-rui-text;
@@ -175,7 +175,7 @@ function onClick(index: number) {
   }
 
   .bullets {
-    @apply mx-4 space-x-1;
+    @apply gap-x-1;
 
     .bullet {
       @apply w-2;
@@ -183,7 +183,7 @@ function onClick(index: number) {
   }
 
   .pills {
-    @apply w-full space-x-3;
+    @apply w-full gap-x-3;
 
     .pill {
       @apply w-full;
@@ -191,7 +191,7 @@ function onClick(index: number) {
   }
 
   .progress {
-    @apply max-w-[60%] mx-4;
+    @apply max-w-[60%];
   }
 
   .arrow__button {
