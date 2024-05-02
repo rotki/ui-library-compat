@@ -172,7 +172,7 @@ const tickSizeInPx = computed(() => `${get(tickSize)}px`);
     </label>
     <FormTextDetail
       v-if="!hideDetails"
-      class="mt-1"
+      class="pt-1"
       :error-messages="errorMessages"
       :success-messages="successMessages"
       :hint="hint"
