@@ -153,6 +153,7 @@ export interface Props {
   collapsed?: TableRow[];
   disabledRows?: TableRow[];
   scroller?: HTMLElement;
+  itemClass?: ((item: TableRow) => string) | string;
 }
 
 defineOptions({
@@ -188,6 +189,7 @@ const props = withDefaults(defineProps<Props>(), {
   scroller: undefined,
   disabledRows: undefined,
   multiPageSelect: false,
+  itemClass: '',
 });
 
 const emit = defineEmits<{
@@ -1153,6 +1155,7 @@ onMounted(() => {
                 :class="[
                   css.tr,
                   { [css.tr__selected]: isSelected(row[rowAttr]) },
+                  typeof itemClass === 'string' ? itemClass : itemClass(row),
                 ]"
               >
                 <td
