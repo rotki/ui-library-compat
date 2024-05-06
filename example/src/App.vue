@@ -30,6 +30,8 @@ const navigation = ref([
       { to: { name: 'tabs' }, title: 'Tabs' },
       { to: { name: 'badges' }, title: 'Badges' },
       { to: { name: 'accordions' }, title: 'Accordions' },
+      { to: { name: 'dialogs' }, title: 'Dialogs' },
+      { to: { name: 'bottom-sheets' }, title: 'Bottom Sheets' },
     ],
   },
   {

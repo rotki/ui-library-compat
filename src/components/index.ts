@@ -135,6 +135,14 @@ import {
   type AccordionProps,
   default as RuiAccordion,
 } from '@/components/accordions/accordion/Accordion.vue';
+import {
+  type Props as BottomSheetProps,
+  default as RuiBottomSheet,
+} from '@/components/overlays/bottom-sheet/BottomSheet.vue';
+import {
+  type DialogProps,
+  default as RuiDialog,
+} from '@/components/overlays/dialog/Dialog.vue';
 import type {
   TableColumn as DataTableColumn,
   SortColumn as DataTableSortColumn,
@@ -177,6 +185,8 @@ export {
   RuiMenuSelect,
   RuiAccordions,
   RuiAccordion,
+  RuiBottomSheet,
+  RuiDialog,
   ProgressProps,
   ChipProps,
   TextFieldProps,
@@ -215,4 +225,6 @@ export {
   MenuSelectProps,
   AccordionsProps,
   AccordionProps,
+  BottomSheetProps,
+  DialogProps,
 };
