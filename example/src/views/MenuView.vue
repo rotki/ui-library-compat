@@ -248,7 +248,6 @@ const primitiveOptions: string[] = ['Lorem', 'Ipsum', 'Dolor', 'Sit amet', 'Cons
 
 const menuSelectPrimitive = ref<MenuSelectProps[]>([
   {
-    disabled: false,
     value: undefined,
     options: primitiveOptions,
   },
@@ -258,15 +257,40 @@ const menuSelectPrimitive = ref<MenuSelectProps[]>([
     options: primitiveOptions,
   },
   {
-    disabled: false,
-    variant: 'outlined',
     value: undefined,
+    dense: true,
+    disabled: true,
     options: primitiveOptions,
   },
   {
+    value: { key: 'Lorem', label: 'Lorem' },
+    dense: true,
+    disabled: true,
+    options: primitiveOptions,
+  },
+  {
+    value: undefined,
+    variant: 'outlined',
+    options: primitiveOptions,
+  },
+  {
+    value: undefined,
+    dense: true,
+    variant: 'outlined',
+    options: primitiveOptions,
+  },
+  {
+    value: undefined,
+    dense: true,
     disabled: true,
     variant: 'outlined',
-    value: undefined,
+    options: primitiveOptions,
+  },
+  {
+    value: { key: 'Lorem', label: 'Lorem' },
+    dense: true,
+    disabled: true,
+    variant: 'outlined',
     options: primitiveOptions,
   },
 ]);
@@ -323,6 +347,7 @@ const menuSelectPrimitive = ref<MenuSelectProps[]>([
           v-model="menu.value"
           v-bind="objectOmit(menu, ['value'])"
           :data-cy="`select-menu-${i}`"
+          full-width
         />
       </div>
     </div>
@@ -342,7 +367,7 @@ const menuSelectPrimitive = ref<MenuSelectProps[]>([
           v-model="menu.value"
           v-bind="objectOmit(menu, ['value'])"
           :data-cy="`select-menu-custom-${i}`"
-          wrappe-classr="w-full"
+          full-width
         >
           <template #activator="{ on, disabled, open, value }">
             <RuiButton
@@ -384,7 +409,6 @@ const menuSelectPrimitive = ref<MenuSelectProps[]>([
           :data-cy="`select-menu-custom-inner-${i}`"
           :item-height="menu.dense ? undefined : 80"
           full-width
-          float-label
           clearable
           :label-class="menu.dense ? undefined : 'h-20'"
           variant="outlined"
