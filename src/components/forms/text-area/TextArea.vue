@@ -315,6 +315,12 @@ onMounted(computeFieldHeight);
       @apply text-white/[0.56];
     }
 
+    &:hover {
+      .label {
+        @apply border-white;
+      }
+    }
+
     &.filled {
       .textarea {
         &:focus {
@@ -334,10 +340,13 @@ onMounted(computeFieldHeight);
         @apply border-white/[0.23];
       }
 
-      .textarea {
-        &:focus {
-          ~ .fieldset {
-            @apply border-white;
+      &:not(.disabled) {
+        .textarea {
+          &:hover,
+          &:focus {
+            ~ .fieldset {
+              @apply border-white;
+            }
           }
         }
       }
@@ -416,6 +425,12 @@ onMounted(computeFieldHeight);
     }
   }
 
+  &:hover {
+    .label {
+      @apply border-black;
+    }
+  }
+
   .icon {
     @apply text-black/[0.54];
   }
@@ -444,10 +459,12 @@ onMounted(computeFieldHeight);
       }
 
       &.outlined {
-        .textarea {
-          &:focus {
-            ~ .fieldset {
-              @apply border-rui-#{$color};
+        &:not(.disabled) {
+          .textarea {
+            &:focus {
+              ~ .fieldset {
+                @apply border-rui-#{$color};
+              }
             }
           }
         }
@@ -559,12 +576,6 @@ onMounted(computeFieldHeight);
 
   &.outlined {
     .textarea {
-      &:focus {
-        ~ .fieldset {
-          @apply border-2 border-black;
-        }
-      }
-
       &:not(:placeholder-shown),
       &:autofill,
       &:-webkit-autofill,
@@ -595,6 +606,23 @@ onMounted(computeFieldHeight);
         &:after {
           @apply whitespace-break-spaces;
           content: '\200B';
+        }
+      }
+    }
+
+    &:not(.disabled) {
+      .textarea {
+        &:hover,
+        &:focus {
+          ~ .fieldset {
+            @apply border border-black;
+          }
+        }
+
+        &:focus {
+          ~ .fieldset {
+            @apply border-2;
+          }
         }
       }
     }

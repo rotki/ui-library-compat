@@ -251,6 +251,12 @@ const showClearIcon = logicAnd(
       @apply text-white/[0.56];
     }
 
+    &:hover {
+      .label {
+        @apply border-white;
+      }
+    }
+
     &.filled {
       .input {
         &:focus {
@@ -270,10 +276,13 @@ const showClearIcon = logicAnd(
         @apply border-white/[0.23];
       }
 
-      .input {
-        &:focus {
-          ~ .fieldset {
-            @apply border-white;
+      &:not(.disabled) {
+        .input {
+          &:hover,
+          &:focus {
+            ~ .fieldset {
+              @apply border-white;
+            }
           }
         }
       }
@@ -341,6 +350,12 @@ const showClearIcon = logicAnd(
     }
   }
 
+  &:hover {
+    .label {
+      @apply border-black;
+    }
+  }
+
   .icon {
     @apply text-black/[0.54];
   }
@@ -372,10 +387,12 @@ const showClearIcon = logicAnd(
       }
 
       &.outlined {
-        .input {
-          &:focus {
-            ~ .fieldset {
-              @apply border-rui-#{$color};
+        &:not(.disabled) {
+          .input {
+            &:focus {
+              ~ .fieldset {
+                @apply border-rui-#{$color};
+              }
             }
           }
         }
@@ -514,12 +531,6 @@ const showClearIcon = logicAnd(
     .input {
       @apply py-4 border-b-0;
 
-      &:focus {
-        ~ .fieldset {
-          @apply border-2 border-black;
-        }
-      }
-
       &:not(:placeholder-shown),
       &:autofill,
       &:-webkit-autofill,
@@ -561,6 +572,23 @@ const showClearIcon = logicAnd(
         &:after {
           @apply truncate max-w-full leading-[0];
           content: '\200B';
+        }
+      }
+    }
+
+    &:not(.disabled) {
+      .input {
+        &:hover,
+        &:focus {
+          ~ .fieldset {
+            @apply border border-black;
+          }
+        }
+
+        &:focus {
+          ~ .fieldset {
+            @apply border-2;
+          }
         }
       }
     }
