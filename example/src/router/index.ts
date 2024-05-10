@@ -143,6 +143,11 @@ const router = new VueRouter({
       component: () => import('@/views/BottomSheetView.vue'),
     },
     {
+      path: '/color-pickers',
+      name: 'color-pickers',
+      component: () => import('@/views/ColorPickerView.vue'),
+    },
+    {
       path: '/breakpoint',
       name: 'breakpoint',
       component: () => import('@/views/BreakpointView.vue'),

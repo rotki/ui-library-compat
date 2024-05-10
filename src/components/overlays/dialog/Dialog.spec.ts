@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import Vue from 'vue';
 import { mount } from '@vue/test-utils';
 import { TeleportPlugin } from '@/components/overlays/teleport-container';
@@ -27,12 +27,6 @@ function createWrapper(options?: any) {
   });
 }
 
-function delay(time: number = 200) {
-  return new Promise((resolve) => {
-    setTimeout(resolve, time);
-  });
-}
-
 describe('dialog', () => {
   it('renders properly', async () => {
     const wrapper = createWrapper();
@@ -43,7 +37,7 @@ describe('dialog', () => {
 
     // Open dialog by clicking activator
     await wrapper.find('#trigger').trigger('click');
-    await delay();
+    await vi.delay();
 
     dialog = document.body.querySelector('div[role=dialog]') as HTMLDivElement;
 
@@ -55,7 +49,7 @@ describe('dialog', () => {
     const closeButton = dialog.querySelector('#close') as HTMLButtonElement;
     closeButton.click();
 
-    await delay();
+    await vi.delay();
     dialog = document.body.querySelector('div[role=dialog]') as HTMLDivElement;
 
     expect(dialog).toBeFalsy();
@@ -68,7 +62,7 @@ describe('dialog', () => {
 
     // Open dialog by clicking activator
     await wrapper.find('#trigger').trigger('click');
-    await delay();
+    await vi.delay();
 
     const dialog = document.body.querySelector('div[role=dialog]') as HTMLDivElement;
     expect(dialog).toBeTruthy();
@@ -96,7 +90,7 @@ describe('dialog', () => {
 
     // Open dialog by clicking activator
     await wrapper.find('#trigger').trigger('click');
-    await delay();
+    await vi.delay();
 
     let dialog = document.body.querySelector('div[role=dialog]') as HTMLDivElement;
     expect(dialog).toBeTruthy();
@@ -105,16 +99,16 @@ describe('dialog', () => {
     const overlay = dialog.querySelector('div[class*=_overlay_]') as HTMLDivElement;
     overlay.click();
 
-    await delay();
+    await vi.delay();
     dialog = document.body.querySelector('div[role=dialog]') as HTMLDivElement;
 
     expect(dialog).toBeFalsy();
 
-    await delay();
+    await vi.delay();
 
     // Open dialog by clicking activator
     await wrapper.find('#trigger').trigger('click');
-    await delay();
+    await vi.delay();
 
     dialog = document.body.querySelector('div[role=dialog]') as HTMLDivElement;
     expect(dialog).toBeTruthy();
@@ -123,7 +117,7 @@ describe('dialog', () => {
     const event = new KeyboardEvent('keydown', { key: 'Escape' });
     dialog.dispatchEvent(event);
 
-    await delay();
+    await vi.delay();
     dialog = document.body.querySelector('div[role=dialog]') as HTMLDivElement;
 
     expect(dialog).toBeFalsy();
@@ -141,7 +135,7 @@ describe('dialog', () => {
 
     // Open dialog by clicking activator
     await wrapper.find('#trigger').trigger('click');
-    await delay();
+    await vi.delay();
 
     let dialog = document.body.querySelector('div[role=dialog]') as HTMLDivElement;
     expect(dialog).toBeTruthy();
@@ -150,7 +144,7 @@ describe('dialog', () => {
     const overlay = dialog.querySelector('div[class*=_overlay_]') as HTMLDivElement;
     overlay.click();
 
-    await delay();
+    await vi.delay();
     dialog = document.body.querySelector('div[role=dialog]') as HTMLDivElement;
 
     expect(dialog).toBeTruthy();
@@ -159,7 +153,7 @@ describe('dialog', () => {
     const event = new KeyboardEvent('keydown', { key: 'Escape' });
     dialog.dispatchEvent(event);
 
-    await delay();
+    await vi.delay();
     dialog = document.body.querySelector('div[role=dialog]') as HTMLDivElement;
 
     expect(dialog).toBeTruthy();

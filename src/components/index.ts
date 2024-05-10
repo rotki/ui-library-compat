@@ -143,6 +143,10 @@ import {
   type DialogProps,
   default as RuiDialog,
 } from '@/components/overlays/dialog/Dialog.vue';
+import {
+  type Props as ColorPickerProps,
+  default as RuiColorPicker,
+} from '@/components/color-picker/ColorPicker.vue';
 import type {
   TableColumn as DataTableColumn,
   SortColumn as DataTableSortColumn,
@@ -187,6 +191,7 @@ export {
   RuiAccordion,
   RuiBottomSheet,
   RuiDialog,
+  RuiColorPicker,
   ProgressProps,
   ChipProps,
   TextFieldProps,
@@ -227,4 +232,5 @@ export {
   AccordionProps,
   BottomSheetProps,
   DialogProps,
+  ColorPickerProps,
 };

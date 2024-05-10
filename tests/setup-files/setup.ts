@@ -44,3 +44,11 @@ vi.mock('vue', async () => {
 vi.mock('vue-router/composables', () => ({
   useRoute: vi.fn(),
 }));
+
+function delay(ms: number = 200): Promise<void> {
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
+}
+
+vi.delay = delay;

@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import Vue from 'vue';
 import { mount } from '@vue/test-utils';
 import { TeleportPlugin } from '@/components/overlays/teleport-container';
@@ -27,12 +27,6 @@ function createWrapper(options?: any) {
   });
 }
 
-function delay(time: number = 200) {
-  return new Promise((resolve) => {
-    setTimeout(resolve, time);
-  });
-}
-
 describe('bottom-sheet', () => {
   it('renders properly', async () => {
     const wrapper = createWrapper();
@@ -43,7 +37,7 @@ describe('bottom-sheet', () => {
 
     // Open bottom sheet by clicking activator
     await wrapper.find('#trigger').trigger('click');
-    await delay();
+    await vi.delay();
 
     bottomSheet = document.body.querySelector('div[role=dialog]') as HTMLDivElement;
 
@@ -55,7 +49,7 @@ describe('bottom-sheet', () => {
     const closeButton = bottomSheet.querySelector('#close') as HTMLButtonElement;
     closeButton.click();
 
-    await delay();
+    await vi.delay();
     bottomSheet = document.body.querySelector('div[role=dialog]') as HTMLDivElement;
 
     expect(bottomSheet).toBeFalsy();
@@ -68,7 +62,7 @@ describe('bottom-sheet', () => {
 
     // Open bottom sheet by clicking activator
     await wrapper.find('#trigger').trigger('click');
-    await delay();
+    await vi.delay();
 
     const bottomSheet = document.body.querySelector('div[role=dialog]') as HTMLDivElement;
     expect(bottomSheet).toBeTruthy();
@@ -96,7 +90,7 @@ describe('bottom-sheet', () => {
 
     // Open bottom sheet by clicking activator
     await wrapper.find('#trigger').trigger('click');
-    await delay();
+    await vi.delay();
 
     let bottomSheet = document.body.querySelector('div[role=dialog]') as HTMLDivElement;
     expect(bottomSheet).toBeTruthy();
@@ -105,16 +99,16 @@ describe('bottom-sheet', () => {
     const overlay = bottomSheet.querySelector('div[class*=_overlay_]') as HTMLDivElement;
     overlay.click();
 
-    await delay();
+    await vi.delay();
     bottomSheet = document.body.querySelector('div[role=dialog]') as HTMLDivElement;
 
     expect(bottomSheet).toBeFalsy();
 
-    await delay();
+    await vi.delay();
 
     // Open bottom sheet by clicking activator
     await wrapper.find('#trigger').trigger('click');
-    await delay();
+    await vi.delay();
 
     bottomSheet = document.body.querySelector('div[role=dialog]') as HTMLDivElement;
     expect(bottomSheet).toBeTruthy();
@@ -123,7 +117,7 @@ describe('bottom-sheet', () => {
     const event = new KeyboardEvent('keydown', { key: 'Escape' });
     bottomSheet.dispatchEvent(event);
 
-    await delay();
+    await vi.delay();
     bottomSheet = document.body.querySelector('div[role=dialog]') as HTMLDivElement;
 
     expect(bottomSheet).toBeFalsy();
@@ -141,7 +135,7 @@ describe('bottom-sheet', () => {
 
     // Open bottom sheet by clicking activator
     await wrapper.find('#trigger').trigger('click');
-    await delay();
+    await vi.delay();
 
     let bottomSheet = document.body.querySelector('div[role=dialog]') as HTMLDivElement;
     expect(bottomSheet).toBeTruthy();
@@ -150,7 +144,7 @@ describe('bottom-sheet', () => {
     const overlay = bottomSheet.querySelector('div[class*=_overlay_]') as HTMLDivElement;
     overlay.click();
 
-    await delay();
+    await vi.delay();
     bottomSheet = document.body.querySelector('div[role=dialog]') as HTMLDivElement;
 
     expect(bottomSheet).toBeTruthy();
@@ -159,7 +153,7 @@ describe('bottom-sheet', () => {
     const event = new KeyboardEvent('keydown', { key: 'Escape' });
     bottomSheet.dispatchEvent(event);
 
-    await delay();
+    await vi.delay();
     bottomSheet = document.body.querySelector('div[role=dialog]') as HTMLDivElement;
 
     expect(bottomSheet).toBeTruthy();

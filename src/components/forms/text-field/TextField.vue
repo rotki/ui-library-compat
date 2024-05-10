@@ -291,7 +291,7 @@ const showClearIcon = logicAnd(
 }
 
 .wrapper {
-  @apply relative w-full min-w-[12.5rem] flex items-center pt-3;
+  @apply relative w-full flex items-center pt-3;
 
   .input {
     @apply leading-6 text-rui-text w-full bg-transparent py-1.5 pr-3 outline-0 outline-none transition-all placeholder:opacity-0 focus:placeholder:opacity-100;
