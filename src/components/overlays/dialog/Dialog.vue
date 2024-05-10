@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { objectOmit } from '@vueuse/shared';
 import RuiTeleport from '@/components/overlays/Teleport';
 
 export interface DialogProps {
@@ -149,7 +150,7 @@ const contentTransition = computed(() => {
         @keydown.esc.stop="!persistent && close()"
         v-on="
           // eslint-disable-next-line vue/no-deprecated-dollar-listeners-api
-          $listeners
+          objectOmit($listeners, ['input'])
         "
       >
         <Transition
