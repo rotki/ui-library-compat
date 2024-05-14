@@ -16,7 +16,6 @@ export interface Props {
   disabled?: boolean;
   readOnly?: boolean;
   dense?: boolean;
-  fullWidth?: boolean;
   clearable?: boolean;
   label?: string;
   menuOptions?: MenuProps;
@@ -144,8 +143,9 @@ function setValue(val: T) {
 <template>
   <RuiMenu
     v-model="isOpen"
-    :class="[css.wrapper, { 'w-full': fullWidth }]"
-    v-bind="{ ...menuOptions, errorMessages, successMessages, hint, dense, fullWidth, showDetails, disabled }"
+    :class="css.wrapper"
+    full-width
+    v-bind="{ ...menuOptions, errorMessages, successMessages, hint, dense, showDetails, disabled }"
   >
     <template #activator="{ on, open, hasError, hasSuccess }">
       <slot
@@ -169,7 +169,6 @@ function setValue(val: T) {
               [css['with-value']]: !!value,
               [css['with-error']]: hasError,
               [css['with-success']]: hasSuccess && !hasError,
-              'w-full': fullWidth,
             },
           ]"
           data-id="activator"
@@ -194,7 +193,8 @@ function setValue(val: T) {
           </span>
           <span
             v-if="value"
-            :class="[css.value, { 'w-full': fullWidth }]"
+            class="w-full"
+            :class="css.value"
           >
             <slot
               name="activator.prepend"
@@ -244,7 +244,7 @@ function setValue(val: T) {
     <template #default="{ width }">
       <div
         :class="[css.menu, menuClass]"
-        :style="{ width: fullWidth ? `${width / 16}rem` : menuWidth }"
+        :style="{ width: `${width}px`, minWidth: menuWidth }"
         v-bind="virtualContainerProps"
         @scroll="containerProps.onScroll"
       >
@@ -288,10 +288,10 @@ function setValue(val: T) {
 
 <style lang="scss" module>
 .wrapper {
-  @apply max-w-full inline-flex flex-col;
+  @apply w-full inline-flex flex-col;
 
   .activator {
-    @apply relative inline-flex items-center max-w-full;
+    @apply relative inline-flex items-center w-full;
     @apply outline-none focus:outline-none cursor-pointer min-h-14 pl-3 py-2 pr-8 rounded;
     @apply m-0 bg-white transition-all text-body-1 text-left hover:border-black;
 
@@ -367,7 +367,7 @@ function setValue(val: T) {
 
     .label {
       @apply text-rui-text-secondary;
-      max-width: calc(100% - 2.5em);
+      max-width: calc(100% - 2.5rem);
     }
 
     .label,

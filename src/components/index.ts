@@ -136,7 +136,7 @@ import {
   default as RuiAccordion,
 } from '@/components/accordions/accordion/Accordion.vue';
 import {
-  type Props as BottomSheetProps,
+  type BottomSheetProps,
   default as RuiBottomSheet,
 } from '@/components/overlays/bottom-sheet/BottomSheet.vue';
 import {

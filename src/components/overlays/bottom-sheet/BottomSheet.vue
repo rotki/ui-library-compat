@@ -2,7 +2,7 @@
 import RuiDialog from '@/components/overlays/dialog/Dialog.vue';
 
 // keep these props in sync with Dialog props
-export interface Props {
+export interface BottomSheetProps {
   value?: boolean;
   persistent?: boolean;
   width?: string | number;
@@ -13,7 +13,7 @@ defineOptions({
   name: 'RuiBottomSheet',
 });
 
-const props = withDefaults(defineProps<Props>(), {
+const props = withDefaults(defineProps<BottomSheetProps>(), {
   value: false,
   persistent: false,
 });

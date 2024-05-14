@@ -313,7 +313,7 @@ const menuSelectPrimitive = ref<MenuSelectProps[]>([
         <RuiMenu
           v-bind="objectOmit(menu, ['buttonColor'])"
           :data-cy="`menu-${i}`"
-          :open-delay="50"
+          :open-delay="1"
         >
           <template #activator="{ on, disabled }">
             <RuiButton
@@ -347,7 +347,6 @@ const menuSelectPrimitive = ref<MenuSelectProps[]>([
           v-model="menu.value"
           v-bind="objectOmit(menu, ['value'])"
           :data-cy="`select-menu-${i}`"
-          full-width
         />
       </div>
     </div>
@@ -367,7 +366,6 @@ const menuSelectPrimitive = ref<MenuSelectProps[]>([
           v-model="menu.value"
           v-bind="objectOmit(menu, ['value'])"
           :data-cy="`select-menu-custom-${i}`"
-          full-width
         >
           <template #activator="{ on, disabled, open, value }">
             <RuiButton
@@ -408,7 +406,6 @@ const menuSelectPrimitive = ref<MenuSelectProps[]>([
           v-bind="objectOmit(menu, ['value'])"
           :data-cy="`select-menu-custom-inner-${i}`"
           :item-height="menu.dense ? undefined : 80"
-          full-width
           clearable
           :label-class="menu.dense ? undefined : 'h-20'"
           variant="outlined"
@@ -444,7 +441,6 @@ const menuSelectPrimitive = ref<MenuSelectProps[]>([
           v-bind="objectOmit(menu, ['value'])"
           :append-width="1.5"
           :data-cy="`select-menu-custom-options-${i}`"
-          full-width
         >
           <template #item.append="{ active }">
             <RuiIcon
@@ -474,7 +470,6 @@ const menuSelectPrimitive = ref<MenuSelectProps[]>([
           v-bind="objectOmit(menu, ['value'])"
           :append-width="1.5"
           :data-cy="`select-menu-custom-options-${i}`"
-          full-width
         >
           <template #item.append="{ active }">
             <RuiIcon
@@ -503,7 +498,6 @@ const menuSelectPrimitive = ref<MenuSelectProps[]>([
           v-bind="objectOmit(menu, ['value'])"
           :append-width="1.5"
           :data-cy="`select-menu-readonly-${i}`"
-          full-width
           read-only
         >
           <template #item.append="{ active }">
