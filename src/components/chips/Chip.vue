@@ -36,17 +36,17 @@ const props = withDefaults(defineProps<Props>(), {
 });
 
 const emit = defineEmits<{
-  (event: 'click:close'): void;
-  (event: 'click'): void;
+  (e: 'click:close'): void;
+  (e: 'click', event: any): void;
 }>();
 
 const { clickable, disabled, bgColor, textColor } = toRefs(props);
 
-function click() {
+function click(event: any) {
   if (get(logicOr(logicNot(clickable), disabled)))
     return;
 
-  emit('click');
+  emit('click', event);
 }
 
 const css = useCssModule();
@@ -80,6 +80,7 @@ const style: ComputedRef<Partial<CSSStyleDeclaration>> = computed(() => {
         [css.readonly]: !clickable,
       },
     ]"
+    class="rui-chip"
     :style="style"
     role="button"
     tabindex="0"
@@ -88,7 +89,7 @@ const style: ComputedRef<Partial<CSSStyleDeclaration>> = computed(() => {
       // eslint-disable-next-line vue/no-deprecated-dollar-listeners-api
       objectOmit($listeners, ['click'])
     "
-    @click="click()"
+    @click="click($event)"
   >
     <div
       v-if="slots.prepend"
@@ -119,7 +120,7 @@ const style: ComputedRef<Partial<CSSStyleDeclaration>> = computed(() => {
 @use '@/styles/colors.scss' as c;
 
 .chip {
-  @apply inline-flex items-center justify-between rounded-full px-1.5 py-[0.25rem] transition-all cursor-default;
+  @apply inline-flex items-center justify-between rounded-full px-1.5 py-[0.25rem] transition-all cursor-default outline-none;
   @apply max-w-full truncate;
 
   &.tile {

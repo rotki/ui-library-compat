@@ -148,6 +148,11 @@ const router = new VueRouter({
       component: () => import('@/views/ColorPickerView.vue'),
     },
     {
+      path: '/auto-completes',
+      name: 'auto-completes',
+      component: () => import('@/views/AutoCompleteView.vue'),
+    },
+    {
       path: '/breakpoint',
       name: 'breakpoint',
       component: () => import('@/views/BreakpointView.vue'),

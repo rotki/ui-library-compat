@@ -147,6 +147,10 @@ import {
   type Props as ColorPickerProps,
   default as RuiColorPicker,
 } from '@/components/color-picker/ColorPicker.vue';
+import {
+  type Props as AutoCompleteProps,
+  default as RuiAutoComplete,
+} from '@/components/forms/auto-complete/RuiAutoComplete.vue';
 import type {
   TableColumn as DataTableColumn,
   SortColumn as DataTableSortColumn,
@@ -192,6 +196,7 @@ export {
   RuiBottomSheet,
   RuiDialog,
   RuiColorPicker,
+  RuiAutoComplete,
   ProgressProps,
   ChipProps,
   TextFieldProps,
@@ -233,4 +238,5 @@ export {
   BottomSheetProps,
   DialogProps,
   ColorPickerProps,
+  AutoCompleteProps,
 };

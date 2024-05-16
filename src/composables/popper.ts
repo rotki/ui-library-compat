@@ -191,6 +191,12 @@ export function usePopper(options: Ref<PopperOptions>, disabled: Ref<boolean> = 
     });
   });
 
+  useResizeObserver(reference, async () => {
+    const instanceVal = get(instance);
+    if (get(open) && instanceVal)
+      await instanceVal.update();
+  });
+
   return {
     instance,
     onClose,

@@ -136,7 +136,7 @@ const options: SelectOption[] = [
   })),
 ];
 
-const menuSelect = ref<MenuSelectProps[]>([
+const menuSelect = ref<MenuSelectProps<SelectOption>[]>([
   {
     disabled: false,
     keyAttr: 'id',
@@ -203,7 +203,7 @@ const menuSelect = ref<MenuSelectProps[]>([
   },
 ]);
 
-const menuSelectCustom = ref<MenuSelectProps[]>([
+const menuSelectCustom = ref<MenuSelectProps<SelectOption>[]>([
   {
     disabled: false,
     keyAttr: 'id',
@@ -220,7 +220,6 @@ const menuSelectCustom = ref<MenuSelectProps[]>([
     dense: true,
     errorMessages: ['This is required'],
     hint: 'lorem ipsum dolor',
-    showDetails: true,
     options,
   },
   {
@@ -230,7 +229,6 @@ const menuSelectCustom = ref<MenuSelectProps[]>([
     keyAttr: 'id',
     textAttr: 'label',
     successMessages: ['lgtm!'],
-    showDetails: true,
     value: undefined,
     options,
   },
@@ -246,9 +244,9 @@ const menuSelectCustom = ref<MenuSelectProps[]>([
 
 const primitiveOptions: string[] = ['Lorem', 'Ipsum', 'Dolor', 'Sit amet', 'Consecteur'];
 
-const menuSelectPrimitive = ref<MenuSelectProps[]>([
+const menuSelectPrimitive = ref<MenuSelectProps<string>[]>([
   {
-    value: undefined,
+    value: 'Lorem',
     options: primitiveOptions,
   },
   {
@@ -263,7 +261,7 @@ const menuSelectPrimitive = ref<MenuSelectProps[]>([
     options: primitiveOptions,
   },
   {
-    value: { key: 'Lorem', label: 'Lorem' },
+    value: 'Lorem',
     dense: true,
     disabled: true,
     options: primitiveOptions,
@@ -287,7 +285,7 @@ const menuSelectPrimitive = ref<MenuSelectProps[]>([
     options: primitiveOptions,
   },
   {
-    value: { key: 'Lorem', label: 'Lorem' },
+    value: 'Lorem',
     dense: true,
     disabled: true,
     variant: 'outlined',
@@ -345,6 +343,7 @@ const menuSelectPrimitive = ref<MenuSelectProps[]>([
       >
         <RuiMenuSelect
           v-model="menu.value"
+          clearable
           v-bind="objectOmit(menu, ['value'])"
           :data-cy="`select-menu-${i}`"
         />
@@ -364,6 +363,7 @@ const menuSelectPrimitive = ref<MenuSelectProps[]>([
       >
         <RuiMenuSelect
           v-model="menu.value"
+          clearable
           v-bind="objectOmit(menu, ['value'])"
           :data-cy="`select-menu-custom-${i}`"
         >
@@ -403,22 +403,22 @@ const menuSelectPrimitive = ref<MenuSelectProps[]>([
       >
         <RuiMenuSelect
           v-model="menu.value"
+          clearable
           v-bind="objectOmit(menu, ['value'])"
           :data-cy="`select-menu-custom-inner-${i}`"
           :item-height="menu.dense ? undefined : 80"
-          clearable
           :label-class="menu.dense ? undefined : 'h-20'"
           variant="outlined"
         >
-          <template #activator.text="{ value }">
-            {{ value.id }} | {{ value.label }}
+          <template #selection="{ item }">
+            {{ item.id }} | {{ item.label }}
           </template>
-          <template #item.text="{ option }">
+          <template #item="{ item }">
             <span
               class="block"
               :class="{ 'my-4': !menu.dense }"
             >
-              {{ option.label }}
+              {{ item.label }}
             </span>
           </template>
         </RuiMenuSelect>
@@ -438,6 +438,7 @@ const menuSelectPrimitive = ref<MenuSelectProps[]>([
       >
         <RuiMenuSelect
           v-model="menu.value"
+          clearable
           v-bind="objectOmit(menu, ['value'])"
           :append-width="1.5"
           :data-cy="`select-menu-custom-options-${i}`"
@@ -467,6 +468,7 @@ const menuSelectPrimitive = ref<MenuSelectProps[]>([
       >
         <RuiMenuSelect
           v-model="menu.value"
+          clearable
           v-bind="objectOmit(menu, ['value'])"
           :append-width="1.5"
           :data-cy="`select-menu-custom-options-${i}`"
@@ -495,6 +497,7 @@ const menuSelectPrimitive = ref<MenuSelectProps[]>([
       >
         <RuiMenuSelect
           v-model="menu.value"
+          clearable
           v-bind="objectOmit(menu, ['value'])"
           :append-width="1.5"
           :data-cy="`select-menu-readonly-${i}`"

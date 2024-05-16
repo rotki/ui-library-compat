@@ -140,6 +140,7 @@ function onLast() {
         name="limit"
         key-attr="limit"
         text-attr="limit"
+        hide-details
         dense
       />
     </div>
@@ -154,6 +155,7 @@ function onLast() {
         name="ranges"
         key-attr="page"
         text-attr="text"
+        hide-details
         dense
       />
       <span :class="css.indicator">

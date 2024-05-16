@@ -7,8 +7,9 @@ import { TeleportPlugin } from '@/components/overlays/teleport-container';
 
 const text = 'This is menu';
 
+Vue.use(TeleportPlugin);
+
 function createWrapper(options?: any) {
-  Vue.use(TeleportPlugin);
   return mount(Menu, {
     ...options,
     scopedSlots: {

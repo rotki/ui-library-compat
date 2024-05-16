@@ -5,8 +5,9 @@ import Button from '@/components/buttons/button/Button.vue';
 import Tooltip from '@/components/overlays/tooltip/Tooltip.vue';
 import { TeleportPlugin } from '@/components/overlays/teleport-container';
 
+Vue.use(TeleportPlugin);
+
 function createWrapper(options?: any) {
-  Vue.use(TeleportPlugin);
   return mount(Tooltip, {
     ...options,
     slots: {

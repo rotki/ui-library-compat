@@ -14,6 +14,7 @@ export interface MenuProps {
   wrapperClass?: string;
   menuClass?: string;
   closeOnContentClick?: boolean;
+  persistOnActivatorClick?: boolean;
   hint?: string;
   errorMessages?: string | string[];
   successMessages?: string | string[];
@@ -37,6 +38,7 @@ const props = withDefaults(defineProps<MenuProps>(), {
   wrapperClass: '',
   menuClass: '',
   closeOnContentClick: false,
+  persistOnActivatorClick: false,
   hint: undefined,
   errorMessages: () => [],
   successMessages: () => [],
@@ -55,6 +57,7 @@ const {
   openDelay,
   popper,
   disabled,
+  persistOnActivatorClick,
   closeOnContentClick,
   openOnHover,
   errorMessages,
@@ -84,7 +87,8 @@ function onLeave() {
 
 function checkClick() {
   if (get(open) && get(click)) {
-    onLeave();
+    if (!get(persistOnActivatorClick))
+      onLeave();
   }
   else {
     onOpen();
@@ -137,7 +141,7 @@ const { hasError, hasSuccess } = useFormTextDetail(
 </script>
 
 <template>
-  <div @keyup.esc.exact="onLeave()">
+  <div @keyup.esc.exact.stop="onLeave()">
     <div
       ref="activator"
       :class="[css.wrapper, wrapperClass, { 'w-full': fullWidth }]"

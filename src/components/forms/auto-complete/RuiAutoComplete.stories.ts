@@ -1,4 +1,4 @@
-import RuiMenuSelect, { type Props } from './RuiMenuSelect.vue';
+import RuiAutoComplete, { type Props } from './RuiAutoComplete.vue';
 import type { Meta, StoryFn, StoryObj } from '@storybook/vue';
 
 interface SelectOption {
@@ -7,7 +7,7 @@ interface SelectOption {
 }
 
 const render: StoryFn<Props> = args => ({
-  components: { RuiMenuSelect },
+  components: { RuiAutoComplete },
   setup() {
     const value = computed({
       get() {
@@ -21,7 +21,7 @@ const render: StoryFn<Props> = args => ({
     return { args, value };
   },
   template: `
-    <RuiMenuSelect v-bind="args" v-model="value" />`,
+    <RuiAutoComplete v-bind="args" v-model="value" />`,
 });
 
 const options: SelectOption[] = [
@@ -55,7 +55,7 @@ const meta: Meta<Props> = {
       options: ['default', 'outlined', 'filled'],
     },
   },
-  component: RuiMenuSelect as any,
+  component: RuiAutoComplete as any,
   parameters: {
     docs: {
       controls: { exclude: ['update:model-value'] },
@@ -63,7 +63,7 @@ const meta: Meta<Props> = {
   },
   render,
   tags: ['autodocs'],
-  title: 'Components/Forms/MenuSelect',
+  title: 'Components/Forms/AutoComplete',
 };
 
 type Story<T = SelectOption> = StoryObj<Props<T>>;
@@ -79,6 +79,14 @@ export const Default: Story = {
 export const PrimitiveItems: Story<string> = {
   args: {
     options: options.map(item => item.label),
+  },
+};
+
+export const MultipleValue: Story<string> = {
+  args: {
+    keyAtrr: 'id',
+    textAttr: 'label',
+    value: [],
   },
 };
 

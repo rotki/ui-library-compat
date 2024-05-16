@@ -102,3 +102,18 @@ export function transformCase<T extends object>(item: T, to: 'camelCase' | 'snak
     return acc;
   }, {} as Record<string, any>);
 }
+
+/**
+ *
+ * @param {string} string - String to convert
+ * @return {string} - String converted to text token, mostly used to matching keyword
+ * @example
+ * getTextToken('this is a sentence'); // thisisasentence
+ */
+
+export function getTextToken(string: any): string {
+  if (!string)
+    return '';
+
+  return string.toString().toLowerCase().replace(/[^\dA-Za-z]/g, '');
+}

@@ -45,6 +45,25 @@ vi.mock('vue-router/composables', () => ({
   useRoute: vi.fn(),
 }));
 
+vi.mock('@vueuse/core', async () => {
+  const mod
+    = await vi.importActual<typeof import('@vueuse/core')>('@vueuse/core');
+
+  return {
+    ...mod,
+    useVirtualList: vi
+      .fn().mockImplementation((options: []) => ({
+        containerProps: {
+          ref: ref(),
+          onScroll: () => {},
+        },
+        list: computed(() => get(options).map((data, index) => ({ data, index }))),
+        wrapperProps: {},
+      })),
+    refDebounced: (ref: Ref) => ref,
+  };
+});
+
 function delay(ms: number = 200): Promise<void> {
   return new Promise((resolve) => {
     setTimeout(resolve, ms);

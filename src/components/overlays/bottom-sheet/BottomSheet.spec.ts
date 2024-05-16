@@ -7,8 +7,9 @@ import Button from '@/components/buttons/button/Button.vue';
 
 const text = 'This is content';
 
+Vue.use(TeleportPlugin);
+
 function createWrapper(options?: any) {
-  Vue.use(TeleportPlugin);
   return mount(BottomSheet, {
     ...options,
     scopedSlots: {

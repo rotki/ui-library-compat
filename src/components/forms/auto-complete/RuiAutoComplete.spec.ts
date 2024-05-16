@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import { mount } from '@vue/test-utils';
 import Vue from 'vue';
-import RuiMenuSelect from '@/components/forms/select/RuiMenuSelect.vue';
+import AutoComplete from '@/components/forms/auto-complete/RuiAutoComplete.vue';
 import { TeleportPlugin } from '@/components/overlays/teleport-container';
 
 interface SelectOption { id: string; label: string }
@@ -9,10 +9,10 @@ interface SelectOption { id: string; label: string }
 Vue.use(TeleportPlugin);
 
 function createWrapper(options?: any) {
-  return mount(RuiMenuSelect, options);
+  return mount(AutoComplete, options);
 }
 
-describe('menu select', () => {
+describe('autocomplete', () => {
   const options: SelectOption[] = [
     { id: '1', label: 'Germany' },
     { id: '2', label: 'Nigeria' },
@@ -38,10 +38,10 @@ describe('menu select', () => {
       },
     });
 
-    expect(wrapper.get('button[data-id="activator"]').classes()).toEqual(
+    expect(wrapper.get('div[data-id="activator"]').classes()).toEqual(
       expect.arrayContaining([expect.stringMatching(/_activator_/)]),
     );
-    expect(wrapper.find('button[data-id="activator"] span[class*=label]').exists()).toBeTruthy();
+    expect(wrapper.find('div[data-id="activator"] span[class*=label]').exists()).toBeTruthy();
     expect(wrapper.find('span > svg').exists()).toBeTruthy();
   });
 
@@ -55,8 +55,8 @@ describe('menu select', () => {
         value: options[4].id,
       },
     });
-    expect(wrapper.find('button[aria-disabled]').exists()).toBeTruthy();
-    expect(wrapper.find('button[aria-disabled]').text()).toMatch('Spain');
+    expect(wrapper.find('div[data-id=activator][tabindex=-1]').exists()).toBeTruthy();
+    expect(wrapper.find('div[data-id=activator][tabindex=-1]').text()).toMatch('Spain');
   });
 
   it('works with primitive options', () => {
@@ -68,7 +68,7 @@ describe('menu select', () => {
         value: options[4].label,
       },
     });
-    expect(wrapper.find('button[data-id=activator]').text()).toMatch('Spain');
+    expect(wrapper.find('div[data-id=activator]').text()).toMatch('Spain');
   });
 
   it('value passed and emitted properly', async () => {
@@ -124,7 +124,54 @@ describe('menu select', () => {
     highlightedItemButton = document.body.querySelector(`button:nth-child(${newSelectedIndex})`) as HTMLButtonElement;
     expect(highlightedItemButton.classList).toContain('highlighted');
 
-    highlightedItemButton?.click();
+    await wrapper.find('[data-id=activator]').trigger('keydown.enter');
     expect(wrapper.emitted().input!.at(-1)![0]).toBe(newSelectedIndex.toString());
+  });
+
+  it('multiple value', async () => {
+    const wrapper = createWrapper({
+      propsData: {
+        autoSelectFirst: true,
+        keyAttr: 'id',
+        options,
+        textAttr: 'label',
+        value: ['7', '8'],
+      },
+    });
+
+    expect(wrapper.find('div[data-id=activator]').exists()).toBeTruthy();
+    let chips = wrapper.find('div[data-id=activator]').findAll('.rui-chip');
+    expect(chips).toHaveLength(2);
+    expect(chips.at(0).text()).toBe('France');
+    expect(chips.at(1).text()).toBe('England');
+
+    // Add India
+    await wrapper.find('input').setValue('India');
+    await vi.delay();
+
+    expect(document.body.querySelectorAll('button').length).toBe(1);
+    const itemButton = document.body.querySelector('button')!;
+    expect(itemButton.innerHTML).toContain('India');
+    itemButton.click();
+
+    let newValue = ['7', '8', '6'];
+    expect(wrapper.emitted().input!.at(-1)![0]).toEqual(newValue);
+
+    await wrapper.setProps({
+      value: newValue,
+    });
+
+    chips = wrapper.find('div[data-id=activator]').findAll('.rui-chip');
+    expect(chips).toHaveLength(3);
+    expect(chips.at(0).text()).toBe('India');
+    expect(chips.at(1).text()).toBe('France');
+    expect(chips.at(2).text()).toBe('England');
+
+    // Delete England
+    await chips.at(2).find('button[type="button"]').trigger('click');
+    await nextTick();
+
+    newValue = ['6', '7'];
+    expect(wrapper.emitted().input!.at(-1)![0]).toEqual(newValue);
   });
 });
