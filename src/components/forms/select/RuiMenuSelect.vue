@@ -156,6 +156,7 @@ function setValue(val: T) {
           ref="activator"
           :disabled="disabled"
           :aria-disabled="disabled"
+          type="button"
           :class="[
             css.activator,
             labelClass,
