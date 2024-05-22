@@ -62,9 +62,7 @@ describe('menu select', () => {
   it('works with primitive options', () => {
     const wrapper = createWrapper({
       propsData: {
-        keyAttr: 'id',
         options: options.map(item => item.label),
-        textAttr: 'label',
         value: options[4].label,
       },
     });

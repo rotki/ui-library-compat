@@ -8,7 +8,7 @@ import type { Ref } from 'vue';
 
 export type T = any;
 
-export type K = Extract<keyof T, string>;
+export type K = string;
 
 export type ModelValue<MV> = MV | MV[] | null;
 
@@ -73,17 +73,15 @@ const emit = defineEmits<{
 const css = useCssModule();
 const attrs = useAttrs();
 
-const { dense, variant, disabled } = toRefs(props);
+const { dense, variant, disabled, options } = toRefs(props);
+
+const textInput = ref();
+const activator = ref();
+const menuRef = ref();
 
 const multiple = computed(() => Array.isArray(props.value));
 
-const textInput = ref();
 const { focused: searchInputFocused } = useFocus(textInput);
-
-const isPrimitiveOptions = computed(() => !(props.options[0] instanceof Object));
-
-const keyProp = computed<K>(() => props.keyAttr ?? 'key' as K);
-const textProp = computed<K>(() => props.textAttr ?? 'label' as K);
 
 const internalSearch: Ref<string> = ref('');
 const debouncedInternalSearch = refDebounced(internalSearch, 200);
@@ -96,28 +94,20 @@ watchImmediate(searchInputModel, (search) => {
   set(internalSearch, search);
 });
 
-const mappedOptions = computed<(T extends string ? T : Record<K, T>)[]>(() => {
-  const filtered = props.options;
-  if (!get(isPrimitiveOptions))
-    return filtered;
-
-  return filtered.map(item => ({
-    [get(keyProp)]: item,
-    [get(textProp)]: item,
-  }));
-});
-
 const filteredOptions = computed(() => {
   const search = get(debouncedInternalSearch);
-  const optionsVal = get(mappedOptions);
+  const optionsVal = get(options);
   if (props.noFilter || !search)
     return optionsVal;
 
-  const usedFilter = props.filter || ((item, search) => {
-    const keywords = [item[get(keyProp)]];
+  const keyAttr = props.keyAttr;
+  const textAttr = props.textAttr;
 
-    if (!get(isPrimitiveOptions))
-      keywords.push(item[get(textProp)]);
+  const usedFilter = props.filter || ((item, search) => {
+    const keywords = [keyAttr ? item[keyAttr] : item.toString()];
+
+    if (textAttr && typeof item === 'object')
+      keywords.push(item[textAttr]);
 
     return keywords.some(keyword => getTextToken(keyword).includes(getTextToken(search)));
   });
@@ -132,15 +122,17 @@ function input(value: ModelValue<T>) {
 const value = computed<(T extends string ? T : Record<K, T>)[]>({
   get: () => {
     const value = props.value;
+    const keyAttr = props.keyAttr;
     const valueToArray = value ? (Array.isArray(value) ? value : [value]) : [];
 
-    if (props.keyAttr || get(isPrimitiveOptions))
-      return get(mappedOptions).filter(item => valueToArray.includes(item[get(keyProp)]));
+    if (keyAttr)
+      return get(options).filter(item => valueToArray.includes(item[keyAttr]));
 
     return valueToArray;
   },
   set: (selected: T[]) => {
-    const selection = props.keyAttr || get(isPrimitiveOptions) ? selected.map(item => item[get(keyProp)]) : selected;
+    const keyAttr = props.keyAttr;
+    const selection = keyAttr ? selected.map(item => item[keyAttr]) : selected;
 
     if (get(multiple))
       return input(selection);
@@ -171,17 +163,17 @@ const {
   getIdentifier,
   isActiveItem,
   itemIndexInValue,
-  menuRef,
   highlightedIndex,
   moveHighlight,
   applyHighlighted,
 } = useDropdownMenu<T, K>({
   itemHeight: props.itemHeight ?? (props.dense ? 30 : 48),
-  keyAttr: get(keyProp),
-  textAttr: get(textProp),
+  keyAttr: props.keyAttr,
+  textAttr: props.textAttr,
   options: filteredOptions,
   dense,
   value,
+  menuRef,
   setValue,
   autoSelectFirst: props.autoSelectFirst,
 });
@@ -260,7 +252,9 @@ watch(focusedValueIndex, (index) => {
     return;
 
   nextTick(() => {
-    const data = get(value)[index][get(keyProp)];
+    const keyAttr = props.keyAttr;
+    const entry = get(value)[index];
+    const data = keyAttr ? entry[keyAttr] : entry;
     const activeChip = get(activator).querySelector(`[data-value="${data}"]`);
     activeChip?.focus();
   });
@@ -291,7 +285,6 @@ function moveSelectedValueHighlight(next: boolean) {
   }
 }
 
-const activator = ref();
 const { focused: activatorFocusedWithin } = useFocusWithin(activator);
 const { focused: menuFocusedWithin } = useFocusWithin(containerProps.ref);
 const anyFocused = logicOr(activatorFocusedWithin, menuFocusedWithin);
@@ -310,7 +303,7 @@ function onInputFocused() {
 }
 
 function clear() {
-  emit('input', null);
+  emit('input', Array.isArray(props.value) ? [] : null);
 }
 
 function onInputDeletePressed() {
@@ -399,10 +392,10 @@ function onInputDeletePressed() {
             <template v-for="(item, i) in value">
               <RuiChip
                 v-if="multiple"
-                :key="item[keyProp]"
+                :key="getIdentifier(item)"
                 tabindex="-1"
                 :size="dense ? 'sm' : 'md'"
-                :data-value="item[keyProp]"
+                :data-value="getIdentifier(item)"
                 closeable
                 clickable
                 @keydown.delete="setValue(item)"
@@ -429,7 +422,7 @@ function onInputDeletePressed() {
               </RuiChip>
               <div
                 v-else
-                :key="item[keyProp]"
+                :key="getIdentifier(item)"
                 class="flex"
               >
                 <slot
@@ -502,19 +495,19 @@ function onInputDeletePressed() {
           ref="menuRef"
         >
           <RuiButton
-            v-for="(item) in renderedData"
-            :key="item.index"
+            v-for="({ item, index }) in renderedData"
+            :key="index"
             :active="isActiveItem(item)"
             :size="dense ? 'sm' : undefined"
             :value="getIdentifier(item)"
             variant="list"
             :class="{
-              highlighted: highlightedIndex === item.index,
-              [css.highlighted]: highlightedIndex === item.index,
+              highlighted: highlightedIndex === index,
+              [css.highlighted]: highlightedIndex === index,
               [css.active]: isActiveItem(item),
             }"
-            @input="setValue(item, item.index)"
-            @mousedown="highlightedIndex = item.index"
+            @input="setValue(item, index)"
+            @mousedown="highlightedIndex = index"
           >
             <template #prepend>
               <slot

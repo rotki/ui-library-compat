@@ -4,8 +4,9 @@ export interface DropdownOptions<T, K> {
   options: Ref<T[]>;
   dense?: Ref<boolean>;
   value: Ref<T | T[] | undefined>;
-  keyAttr: K;
-  textAttr: K;
+  menuRef: Ref<HTMLElement>;
+  keyAttr?: K;
+  textAttr?: K;
   appendWidth?: number;
   prependWidth?: number;
   itemHeight?: number;
@@ -22,6 +23,7 @@ export function useDropdownMenu<T, K extends keyof T>({
   dense,
   itemHeight = 48,
   keyAttr,
+  menuRef,
   options,
   overscan = 5,
   prependWidth,
@@ -37,13 +39,18 @@ export function useDropdownMenu<T, K extends keyof T>({
     },
   );
 
-  const renderedData: ComputedRef<(T & { index: number })[]> = useArrayMap(list, ({ data, index }) => ({ ...data, index }));
+  const renderedData = useArrayMap(list, ({ data, index }) => ({ index, item: data }));
 
   const isOpen: Ref<boolean> = ref(false);
 
-  const highlightedIndex: Ref<number> = ref(get(autoSelectFirst) ? 0 : -1);
+  const valueKey = computed(() => {
+    const selected = get(value);
+    if (!keyAttr || !selected)
+      return selected;
+    return Array.isArray(selected) ? selected.map(item => item[keyAttr]) : selected[keyAttr];
+  });
 
-  const menuRef = ref();
+  const highlightedIndex: Ref<number> = ref(get(autoSelectFirst) ? 0 : -1);
 
   const menuWidth = computed(() => {
     const widths = { max: 0, min: 0 };
@@ -82,12 +89,18 @@ export function useDropdownMenu<T, K extends keyof T>({
     set(isOpen, state);
   }
 
-  function getText(item: T): T[K] {
-    return item[textAttr];
+  function getText(item: T): T[K] | T {
+    if (textAttr)
+      return item[textAttr];
+
+    return item;
   }
 
-  function getIdentifier(item: T): T[K] {
-    return item[keyAttr];
+  function getIdentifier(item: T): T[K] | T {
+    if (keyAttr)
+      return item[keyAttr];
+
+    return item;
   }
 
   function itemIndexInValue(item: T): number {
@@ -97,7 +110,11 @@ export function useDropdownMenu<T, K extends keyof T>({
     if (selected.length === 0)
       return -1;
 
-    return selected.findIndex(selectedItem => selectedItem[keyAttr] === item[keyAttr]);
+    return selected.findIndex((selectedItem) => {
+      if (keyAttr)
+        return selectedItem[keyAttr] === item[keyAttr];
+      return selectedItem === item;
+    });
   }
 
   function isActiveItem(item: T): boolean {
@@ -109,19 +126,19 @@ export function useDropdownMenu<T, K extends keyof T>({
     nextTick(() => {
       const container = get(menuRef)?.parentElement;
       if (container && index > -1) {
-        const highlightedElem = get(menuRef)
-          .getElementsByClassName('highlighted')[0];
+        const highlightedElem = get(menuRef).getElementsByClassName('highlighted')[0];
 
         if (highlightedElem) {
           highlightedElem.scrollIntoView?.({ block: 'nearest' });
-          if (get(autoFocus))
-            highlightedElem.focus();
+          if (get(autoFocus) && 'focus' in highlightedElem && typeof highlightedElem.focus === 'function')
+            highlightedElem?.focus();
         }
         else {
           container.scrollTop = index * itemHeight;
           if (get(autoFocus)) {
-            get(menuRef)
-              .getElementsByClassName('highlighted')[0]?.focus();
+            const elem = get(menuRef).getElementsByClassName('highlighted')[0];
+            if ('focus' in elem && typeof elem.focus === 'function')
+              elem.focus();
           }
         }
       }
@@ -197,9 +214,9 @@ export function useDropdownMenu<T, K extends keyof T>({
     if (highlightedIndexVal === -1)
       return;
 
-    const data = get(renderedData).find(({ index }) => highlightedIndexVal === index);
-    if (data)
-      setValue(data);
+    const entry = get(options).find((_data, index) => highlightedIndexVal === index);
+    if (entry)
+      setValue(entry);
   };
 
   return {
@@ -211,11 +228,11 @@ export function useDropdownMenu<T, K extends keyof T>({
     isActiveItem,
     isOpen,
     itemIndexInValue,
-    menuRef,
     menuWidth,
     moveHighlight,
     renderedData,
     toggle,
+    valueKey,
     wrapperProps,
   };
 }

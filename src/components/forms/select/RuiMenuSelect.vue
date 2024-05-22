@@ -5,7 +5,7 @@ import RuiMenu, { type MenuProps } from '@/components/overlays/menu/Menu.vue';
 
 export type T = any;
 
-export type K = Extract<keyof T, string>;
+export type K = string;
 
 export interface Props<T> {
   options: T[];
@@ -63,34 +63,22 @@ const emit = defineEmits<{
 const css = useCssModule();
 const attrs = useAttrs();
 
-const { dense, variant } = toRefs(props);
+const { dense, variant, options } = toRefs(props);
 
+const menuRef = ref();
 const activator = ref();
 const { focused } = useFocus(activator);
 
-const isPrimitiveOptions = computed(() => !(props.options[0] instanceof Object));
-
-const keyProp = computed<K>(() => props.keyAttr ?? 'key' as K);
-const textProp = computed<K>(() => props.textAttr ?? 'label' as K);
-
-const mappedOptions = computed<(T extends string ? T : Record<K, T>)[]>(() => {
-  if (!get(isPrimitiveOptions))
-    return props.options;
-
-  return props.options.map(option => ({
-    [get(keyProp)]: option,
-    [get(textProp)]: option,
-  }));
-});
-
-const value = computed<(T extends string ? T : Record<K, T>) | undefined>({
+const value = computed<T | undefined>({
   get: () => {
-    if (props.keyAttr || get(isPrimitiveOptions))
-      return get(mappedOptions).find(option => option[get(keyProp)] === props.value);
-    return props.value;
+    const keyAttr = props.keyAttr;
+    if (keyAttr)
+      return props.options.find(option => option[keyAttr] === props.value);
+    return props.value as T;
   },
   set: (selected?: T) => {
-    const selection = (props.keyAttr || get(isPrimitiveOptions)) && selected ? selected[get(keyProp)] : selected;
+    const keyAttr = props.keyAttr;
+    const selection = keyAttr && selected ? selected[keyAttr] : selected;
     return emit('input', selection);
   },
 });
@@ -111,17 +99,18 @@ const {
   getText,
   getIdentifier,
   isActiveItem,
-  menuRef,
   highlightedIndex,
   moveHighlight,
+  valueKey,
 } = useDropdownMenu<T, K>({
   itemHeight: props.itemHeight ?? (props.dense ? 30 : 48),
-  keyAttr: get(keyProp),
-  textAttr: get(textProp),
-  options: mappedOptions,
+  keyAttr: props.keyAttr,
+  textAttr: props.textAttr,
+  options,
   autoFocus: true,
   dense,
   value,
+  menuRef,
   autoSelectFirst: props.autoSelectFirst,
 });
 
@@ -256,7 +245,7 @@ function setValue(val: T, index?: number) {
         </fieldset>
       </slot>
       <input
-        :value="value ? value[keyProp] : ''"
+        :value="valueKey"
         class="hidden"
         type="hidden"
       />
@@ -275,18 +264,18 @@ function setValue(val: T, index?: number) {
           ref="menuRef"
         >
           <RuiButton
-            v-for="(item) in renderedData"
-            :key="item.index"
+            v-for="({ item, index }) in renderedData"
+            :key="index"
             :active="isActiveItem(item)"
             :size="dense ? 'sm' : undefined"
             :value="getIdentifier(item)"
             variant="list"
             :class="{
-              highlighted: highlightedIndex === item.index,
-              [css.highlighted]: !isActiveItem(item) && highlightedIndex === item.index,
+              highlighted: highlightedIndex === index,
+              [css.highlighted]: !isActiveItem(item) && highlightedIndex === index,
             }"
-            @input="setValue(item, item.index)"
-            @mousedown="highlightedIndex = item.index"
+            @input="setValue(item, index)"
+            @mousedown="highlightedIndex = index"
           >
             <template #prepend>
               <slot
