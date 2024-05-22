@@ -48,7 +48,7 @@ const props = withDefaults(defineProps<Props<T>>(), {
   disabled: false,
   readOnly: false,
   dense: false,
-  clearable: true,
+  clearable: false,
   hideDetails: false,
   label: 'Select',
   prependWidth: 0,
