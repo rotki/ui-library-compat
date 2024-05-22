@@ -2,6 +2,7 @@
 import { objectOmit } from '@vueuse/shared';
 import { logicNot, logicOr } from '@vueuse/math';
 import Icon from '@/components/icons/Icon.vue';
+import type { StyleValue } from 'vue';
 import type { ContextColorsType } from '@/consts/colors';
 import type { RuiIcons } from '~/src';
 
@@ -53,8 +54,8 @@ const css = useCssModule();
 const slots = useSlots();
 const attrs = useAttrs();
 
-const style: ComputedRef<Partial<CSSStyleDeclaration>> = computed(() => {
-  const style: Partial<CSSStyleDeclaration> = {};
+const style = computed<StyleValue>(() => {
+  const style: StyleValue = {};
   const bg = get(bgColor);
   const text = get(textColor);
   if (bg)
