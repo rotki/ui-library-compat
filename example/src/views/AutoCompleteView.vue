@@ -181,12 +181,14 @@ const autoCompletePrimitive = ref<AutoCompleteProps<string>[]>([
   },
   {
     value: [],
+    chips: true,
     variant: 'outlined',
     label: 'Multiple',
     options: primitiveOptions,
   },
   {
     value: [],
+    chips: true,
     dense: true,
     variant: 'outlined',
     label: 'Multiple',
@@ -194,6 +196,7 @@ const autoCompletePrimitive = ref<AutoCompleteProps<string>[]>([
   },
   {
     value: [],
+    chips: true,
     dense: true,
     disabled: true,
     variant: 'outlined',

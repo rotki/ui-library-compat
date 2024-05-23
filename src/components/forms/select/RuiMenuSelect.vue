@@ -2,6 +2,7 @@
 import RuiButton from '@/components/buttons/button/Button.vue';
 import RuiIcon from '@/components/icons/Icon.vue';
 import RuiMenu, { type MenuProps } from '@/components/overlays/menu/Menu.vue';
+import RuiProgress from '@/components/progress/Progress.vue';
 
 export type T = any;
 
@@ -13,6 +14,7 @@ export interface Props<T> {
   textAttr?: K;
   value?: T;
   disabled?: boolean;
+  loading?: boolean;
   readOnly?: boolean;
   dense?: boolean;
   clearable?: boolean;
@@ -30,6 +32,8 @@ export interface Props<T> {
   successMessages?: string | string[];
   hideDetails?: boolean;
   autoSelectFirst?: boolean;
+  hideNoData?: boolean;
+  noDataText?: string;
 }
 
 defineOptions({
@@ -39,6 +43,7 @@ defineOptions({
 
 const props = withDefaults(defineProps<Props<T>>(), {
   disabled: false,
+  loading: false,
   readOnly: false,
   dense: false,
   clearable: false,
@@ -54,6 +59,8 @@ const props = withDefaults(defineProps<Props<T>>(), {
   errorMessages: () => [],
   successMessages: () => [],
   autoSelectFirst: false,
+  hideNoData: false,
+  noDataText: 'No data available',
 });
 
 const emit = defineEmits<{
@@ -236,6 +243,14 @@ function setValue(val: T, index?: number) {
               name="arrow-drop-down-fill"
             />
           </span>
+
+          <RuiProgress
+            v-if="loading"
+            class="absolute left-0 bottom-0 w-full"
+            color="primary"
+            thickness="3"
+            variant="indeterminate"
+          />
         </button>
         <fieldset
           v-if="outlined"
@@ -252,6 +267,7 @@ function setValue(val: T, index?: number) {
     </template>
     <template #default="{ width }">
       <div
+        v-if="options.length > 0"
         :class="[css.menu, menuClass]"
         :style="{ width: `${width}px`, minWidth: menuWidth }"
         v-bind="virtualContainerProps"
@@ -298,6 +314,18 @@ function setValue(val: T, index?: number) {
           </RuiButton>
         </div>
       </div>
+
+      <div
+        v-else-if="!hideNoData"
+        :style="{ width: `${width}px`, minWidth: menuWidth }"
+        :class="menuClass"
+      >
+        <slot name="no-data">
+          <div class="p-4">
+            {{ noDataText }}
+          </div>
+        </slot>
+      </div>
     </template>
   </RuiMenu>
 </template>
@@ -316,7 +344,7 @@ function setValue(val: T, index?: number) {
     }
 
     &.dense {
-      @apply py-1 min-h-10;
+      @apply py-1.5 min-h-10;
 
       ~ .fieldset {
         @apply px-2;

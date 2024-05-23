@@ -4,20 +4,22 @@ import RuiButton from '@/components/buttons/button/Button.vue';
 import RuiIcon from '@/components/icons/Icon.vue';
 import RuiChip from '@/components/chips/Chip.vue';
 import RuiMenu, { type MenuProps } from '@/components/overlays/menu/Menu.vue';
+import RuiProgress from '@/components/progress/Progress.vue';
 import type { Ref } from 'vue';
 
 export type T = any;
 
 export type K = string;
 
-export type ModelValue<MV> = MV | MV[] | null;
+export type ModelValue = T | T[] | T[K] | null;
 
 export interface Props<T> {
   options: T[];
   keyAttr?: K;
   textAttr?: K;
-  value?: ModelValue<T>;
+  value?: ModelValue;
   disabled?: boolean;
+  loading?: boolean;
   readOnly?: boolean;
   dense?: boolean;
   clearable?: boolean;
@@ -35,21 +37,30 @@ export interface Props<T> {
   successMessages?: string | string[];
   hideDetails?: boolean;
   autoSelectFirst?: boolean;
+  chips?: boolean;
   searchInput?: string;
   noFilter?: boolean;
+  hideNoData?: boolean;
+  noDataText?: string;
   filter?: (item: T, queryText: string) => boolean;
+  hideSelected?: boolean;
+  placeholder?: string;
+  returnObject?: boolean;
 }
 
 defineOptions({
   name: 'RuiAutoComplete',
+  inheritAttrs: false,
 });
 
 const props = withDefaults(defineProps<Props<T>>(), {
   disabled: false,
+  loading: false,
   readOnly: false,
   dense: false,
   clearable: false,
   hideDetails: false,
+  chips: false,
   label: 'Select',
   prependWidth: 0,
   appendWidth: 0,
@@ -63,10 +74,14 @@ const props = withDefaults(defineProps<Props<T>>(), {
   autoSelectFirst: false,
   searchInput: '',
   noFilter: false,
+  hideNoData: false,
+  noDataText: 'No data available',
+  hideSelected: false,
+  returnObject: false,
 });
 
 const emit = defineEmits<{
-  (e: 'input', value: ModelValue<T>): void;
+  (e: 'input', value: ModelValue): void;
   (e: 'update:search-input', search: string): void;
 }>();
 
@@ -115,7 +130,7 @@ const filteredOptions = computed(() => {
   return optionsVal.filter(item => usedFilter(item, search));
 });
 
-function input(value: ModelValue<T>) {
+function input(value: ModelValue) {
   emit('input', value);
 }
 
@@ -125,14 +140,16 @@ const value = computed<(T extends string ? T : Record<K, T>)[]>({
     const keyAttr = props.keyAttr;
     const valueToArray = value ? (Array.isArray(value) ? value : [value]) : [];
 
-    if (keyAttr)
-      return get(options).filter(item => valueToArray.includes(item[keyAttr]));
+    if (keyAttr && !props.returnObject) {
+      const filtered = get(options).filter(item => valueToArray.includes(item[keyAttr]));
+      return get(multiple) || filtered.length <= 1 ? filtered : [filtered[0]];
+    }
 
     return valueToArray;
   },
   set: (selected: T[]) => {
     const keyAttr = props.keyAttr;
-    const selection = keyAttr ? selected.map(item => item[keyAttr]) : selected;
+    const selection = keyAttr && !props.returnObject ? selected.map(item => item[keyAttr]) : selected;
 
     if (get(multiple))
       return input(selection);
@@ -176,6 +193,7 @@ const {
   menuRef,
   setValue,
   autoSelectFirst: props.autoSelectFirst,
+  hideSelected: props.hideSelected,
 });
 
 const outlined = computed(() => get(variant) === 'outlined');
@@ -316,6 +334,24 @@ function onInputDeletePressed() {
       clear();
   }
 }
+
+function chipAttrs(item: (T extends string ? T : Record<K, T>)) {
+  return {
+    'data-value': getIdentifier(item),
+  };
+}
+
+function chipListener(item: (T extends string ? T : Record<K, T>), index: number) {
+  return {
+    'keydown': (event: KeyboardEvent) => {
+      const { key } = event;
+      if (['Backspace', 'Delete'].includes(key))
+        setValue(item);
+    },
+    'click.stop': () => setValueFocus(index),
+    'click:close': () => setValue(item),
+  };
+}
 </script>
 
 <template>
@@ -391,21 +427,17 @@ function onInputDeletePressed() {
           <div :class="css.value">
             <template v-for="(item, i) in value">
               <RuiChip
-                v-if="multiple"
+                v-if="chips"
                 :key="getIdentifier(item)"
                 tabindex="-1"
                 :size="dense ? 'sm' : 'md'"
-                :data-value="getIdentifier(item)"
                 closeable
+                :class="{ 'leading-3': dense }"
                 clickable
-                @keydown.delete="setValue(item)"
-                @click.stop="setValueFocus(i)"
-                @click:close="setValue(item)"
+                v-bind="chipAttrs(item)"
+                v-on="chipListener(item, i)"
               >
-                <div
-                  :key="i"
-                  class="flex"
-                >
+                <div class="flex">
                   <slot
                     name="selection.prepend"
                     :index="i"
@@ -433,7 +465,7 @@ function onInputDeletePressed() {
                 <slot
                   :index="i"
                   name="selection"
-                  v-bind="{ item }"
+                  v-bind="{ item, chipAttrs: chipAttrs(item), chipOn: chipListener(item, i) }"
                 >
                   {{ getText(item) }}
                 </slot>
@@ -443,9 +475,10 @@ function onInputDeletePressed() {
               ref="textInput"
               :disabled="disabled"
               :value="internalSearch"
-              class="bg-transparent outline-none min-w-[4rem] flex-1"
+              class="bg-transparent outline-none"
               type="text"
-              :class="{ '!w-0 !min-w-0': !anyFocused }"
+              :placeholder="placeholder"
+              :class="!anyFocused || disabled ? 'w-0 h-0' : 'flex-1 min-w-[4rem]'"
               @keydown.delete="onInputDeletePressed()"
               @input="updateSearchInput($event)"
               @focus="onInputFocused()"
@@ -472,6 +505,14 @@ function onInputDeletePressed() {
               name="arrow-drop-down-fill"
             />
           </span>
+
+          <RuiProgress
+            v-if="loading"
+            class="absolute left-0 bottom-0 w-full"
+            color="primary"
+            thickness="3"
+            variant="indeterminate"
+          />
         </div>
         <fieldset
           v-if="outlined"
@@ -483,6 +524,7 @@ function onInputDeletePressed() {
     </template>
     <template #default="{ width }">
       <div
+        v-if="filteredOptions.length > 0"
         :class="[css.menu, menuClass]"
         :style="{ width: `${width}px`, minWidth: menuWidth }"
         v-bind="virtualContainerProps"
@@ -530,6 +572,18 @@ function onInputDeletePressed() {
           </RuiButton>
         </div>
       </div>
+
+      <div
+        v-else-if="!hideNoData"
+        :style="{ width: `${width}px`, minWidth: menuWidth }"
+        :class="menuClass"
+      >
+        <slot name="no-data">
+          <div class="p-4">
+            {{ noDataText }}
+          </div>
+        </slot>
+      </div>
     </template>
   </RuiMenu>
 </template>
@@ -548,7 +602,7 @@ function onInputDeletePressed() {
     }
 
     &.dense {
-      @apply py-1 min-h-10;
+      @apply py-1.5 min-h-10;
 
       ~ .fieldset {
         @apply px-2;
