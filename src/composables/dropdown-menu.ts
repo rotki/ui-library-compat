@@ -6,7 +6,7 @@ export interface DropdownOptions<T, K> {
   value: Ref<T | T[] | undefined>;
   menuRef: Ref<HTMLElement>;
   keyAttr?: K;
-  textAttr?: K;
+  textAttr?: K | ((item: T) => string);
   appendWidth?: number;
   prependWidth?: number;
   itemHeight?: number;
@@ -14,6 +14,7 @@ export interface DropdownOptions<T, K> {
   autoSelectFirst?: boolean;
   autoFocus?: boolean;
   setValue?: (val: T) => void;
+  hideSelected?: boolean;
 }
 
 export function useDropdownMenu<T, K extends keyof T>({
@@ -21,16 +22,25 @@ export function useDropdownMenu<T, K extends keyof T>({
   autoFocus,
   autoSelectFirst,
   dense,
+  hideSelected,
   itemHeight = 48,
   keyAttr,
   menuRef,
-  options,
+  options: allOptions,
   overscan = 5,
   prependWidth,
   setValue,
   textAttr,
   value,
 }: DropdownOptions<T, K>) {
+  const options = computed(() => {
+    const options = get(allOptions);
+    if (!hideSelected)
+      return options;
+
+    return options.filter(item => !isActiveItem(item));
+  });
+
   const { containerProps, list, wrapperProps } = useVirtualList<T>(
     options,
     {
@@ -89,9 +99,14 @@ export function useDropdownMenu<T, K extends keyof T>({
     set(isOpen, state);
   }
 
-  function getText(item: T): T[K] | T {
-    if (textAttr)
-      return item[textAttr];
+  function getText(item: T): T[K] | T | string {
+    if (textAttr) {
+      if (typeof textAttr === 'function')
+        return textAttr(item);
+
+      else
+        return item[textAttr];
+    }
 
     return item;
   }
@@ -121,7 +136,7 @@ export function useDropdownMenu<T, K extends keyof T>({
     return itemIndexInValue(item) !== -1;
   }
 
-  function adjustScrollByHighlightedIndex() {
+  function adjustScrollByHighlightedIndex(smooth: boolean = false) {
     const index = get(highlightedIndex);
     nextTick(() => {
       const container = get(menuRef)?.parentElement;
@@ -129,7 +144,7 @@ export function useDropdownMenu<T, K extends keyof T>({
         const highlightedElem = get(menuRef).getElementsByClassName('highlighted')[0];
 
         if (highlightedElem) {
-          highlightedElem.scrollIntoView?.({ block: 'nearest' });
+          highlightedElem.scrollIntoView?.({ behavior: smooth ? 'smooth' : 'auto', block: 'nearest' });
           if (get(autoFocus) && 'focus' in highlightedElem && typeof highlightedElem.focus === 'function')
             highlightedElem?.focus();
         }
@@ -137,7 +152,7 @@ export function useDropdownMenu<T, K extends keyof T>({
           container.scrollTop = index * itemHeight;
           if (get(autoFocus)) {
             const elem = get(menuRef).getElementsByClassName('highlighted')[0];
-            if ('focus' in elem && typeof elem.focus === 'function')
+            if (elem && 'focus' in elem && typeof elem.focus === 'function')
               elem.focus();
           }
         }
@@ -169,22 +184,14 @@ export function useDropdownMenu<T, K extends keyof T>({
   watch(highlightedIndex, (curr, prev) => {
     if (curr !== prev) {
       nextTick(() => {
-        adjustScrollByHighlightedIndex();
+        adjustScrollByHighlightedIndex(true);
       });
     }
   });
 
   watch(options, () => {
-    if (get(highlightedIndex) !== -1) {
-      if (get(value)) {
-        const index = get(options).findIndex(isActiveItem);
-        if (index > -1) {
-          set(highlightedIndex, index);
-          return;
-        }
-      }
+    if (get(highlightedIndex) !== -1)
       set(highlightedIndex, 0);
-    }
   });
 
   const moveHighlight = (up: boolean) => {

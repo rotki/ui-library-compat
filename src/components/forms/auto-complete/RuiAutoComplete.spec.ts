@@ -130,6 +130,7 @@ describe('autocomplete', () => {
     const wrapper = createWrapper({
       propsData: {
         autoSelectFirst: true,
+        chips: true,
         keyAttr: 'id',
         options,
         textAttr: 'label',

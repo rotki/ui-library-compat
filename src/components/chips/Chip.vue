@@ -128,15 +128,15 @@ const style = computed<StyleValue>(() => {
     @apply rounded-sm;
   }
 
+  &:not(.readonly):not(.disabled) {
+    @apply hover:brightness-90 focus:brightness-75;
+  }
+
   &.grey {
     @apply text-rui-text;
 
     &.filled {
-      @apply bg-black/[0.08];
-
-      &:not(.readonly):not(.disabled) {
-        @apply hover:bg-black/[0.12] focus:bg-black/[0.20];
-      }
+      @apply bg-rui-grey-200;
     }
 
     &.outlined {
@@ -152,17 +152,13 @@ const style = computed<StyleValue>(() => {
     &.#{$color} {
       &.filled {
         @apply text-rui-dark-text bg-rui-#{$color};
-
-        &:not(.readonly):not(.disabled) {
-          @apply hover:bg-rui-#{$color}-darker;
-        }
       }
 
       &.outlined {
         @apply border text-rui-#{$color} border-rui-#{$color}/50 bg-transparent;
 
         &:not(.readonly):not(.disabled) {
-          @apply hover:bg-rui-#{$color}/[0.04];
+          @apply hover:bg-rui-#{$color}/[0.04] focus:bg-rui-#{$color}/[0.12];
         }
       }
     }
@@ -227,11 +223,21 @@ const style = computed<StyleValue>(() => {
 
 :global(.dark) {
   .chip {
-    &.grey {
-      @apply bg-white/[0.16];
+    &:not(.readonly):not(.disabled) {
+      @apply hover:brightness-110 focus:brightness-75;
+    }
 
-      &:not(.readonly):not(.disabled) {
-        @apply hover:bg-white/[0.20] focus:bg-white/[0.24];
+    &.grey {
+      &.filled {
+        @apply bg-rui-grey-800;
+      }
+
+      &.outlined {
+        @apply border-white/[0.26];
+
+        &:not(.readonly):not(.disabled) {
+          @apply hover:bg-white/[0.04] focus:bg-white/[0.12];
+        }
       }
     }
 
