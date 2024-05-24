@@ -136,7 +136,7 @@ export function useDropdownMenu<T, K extends keyof T>({
     return itemIndexInValue(item) !== -1;
   }
 
-  function adjustScrollByHighlightedIndex() {
+  function adjustScrollByHighlightedIndex(smooth: boolean = false) {
     const index = get(highlightedIndex);
     nextTick(() => {
       const container = get(menuRef)?.parentElement;
@@ -144,7 +144,7 @@ export function useDropdownMenu<T, K extends keyof T>({
         const highlightedElem = get(menuRef).getElementsByClassName('highlighted')[0];
 
         if (highlightedElem) {
-          highlightedElem.scrollIntoView?.({ block: 'nearest' });
+          highlightedElem.scrollIntoView?.({ behavior: smooth ? 'smooth' : 'auto', block: 'nearest' });
           if (get(autoFocus) && 'focus' in highlightedElem && typeof highlightedElem.focus === 'function')
             highlightedElem?.focus();
         }
@@ -184,7 +184,7 @@ export function useDropdownMenu<T, K extends keyof T>({
   watch(highlightedIndex, (curr, prev) => {
     if (curr !== prev) {
       nextTick(() => {
-        adjustScrollByHighlightedIndex();
+        adjustScrollByHighlightedIndex(true);
       });
     }
   });
