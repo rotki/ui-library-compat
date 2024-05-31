@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { logicAnd, logicOr } from '@vueuse/math';
+import { objectOmit } from '@vueuse/shared';
 import RuiButton from '@/components/buttons/button/Button.vue';
 import RuiIcon from '@/components/icons/Icon.vue';
 import RuiChip from '@/components/chips/Chip.vue';
@@ -14,7 +15,7 @@ export type K = string;
 export type ModelValue = T | T[] | T[K] | null;
 
 export interface Props<T> {
-  options: T[];
+  options?: T[];
   keyAttr?: K;
   textAttr?: K;
   value?: ModelValue;
@@ -46,6 +47,7 @@ export interface Props<T> {
   hideSelected?: boolean;
   placeholder?: string;
   returnObject?: boolean;
+  customValue?: boolean;
 }
 
 defineOptions({
@@ -54,6 +56,7 @@ defineOptions({
 });
 
 const props = withDefaults(defineProps<Props<T>>(), {
+  options: () => [],
   disabled: false,
   loading: false,
   readOnly: false,
@@ -78,6 +81,7 @@ const props = withDefaults(defineProps<Props<T>>(), {
   noDataText: 'No data available',
   hideSelected: false,
   returnObject: false,
+  customValue: false,
 });
 
 const emit = defineEmits<{
@@ -87,19 +91,23 @@ const emit = defineEmits<{
 
 const css = useCssModule();
 const attrs = useAttrs();
+const slots = useSlots();
 
 const { dense, variant, disabled, options } = toRefs(props);
 
 const textInput = ref();
 const activator = ref();
+const noDataContainer = ref();
 const menuRef = ref();
 
 const multiple = computed(() => Array.isArray(props.value));
 
+const shouldApplyValueAsSearch = computed(() => !(slots.selection || get(multiple) || props.chips));
+
 const { focused: searchInputFocused } = useFocus(textInput);
 
 const internalSearch: Ref<string> = ref('');
-const debouncedInternalSearch = refDebounced(internalSearch, 200);
+const debouncedInternalSearch = refDebounced(internalSearch, 100);
 
 const searchInputModel = useVModel(props, 'searchInput', emit, {
   eventName: 'update:search-input',
@@ -109,10 +117,12 @@ watchImmediate(searchInputModel, (search) => {
   set(internalSearch, search);
 });
 
+const justOpened = ref(false);
+
 const filteredOptions = computed(() => {
   const search = get(debouncedInternalSearch);
   const optionsVal = get(options);
-  if (props.noFilter || !search)
+  if (props.noFilter || !search || get(justOpened))
     return optionsVal;
 
   const keyAttr = props.keyAttr;
@@ -138,12 +148,34 @@ const value = computed<(T extends string ? T : Record<K, T>)[]>({
   get: () => {
     const value = props.value;
     const keyAttr = props.keyAttr;
+    const multipleVal = get(multiple);
     const valueToArray = value ? (Array.isArray(value) ? value : [value]) : [];
 
     if (keyAttr && !props.returnObject) {
-      const filtered = get(options).filter(item => valueToArray.includes(item[keyAttr]));
-      return get(multiple) || filtered.length <= 1 ? filtered : [filtered[0]];
+      const filtered: T[] = [];
+      valueToArray.forEach((val) => {
+        const inOptions = get(options).find(item => getIdentifier(item) === val);
+
+        if (inOptions)
+          return filtered.push(inOptions);
+        if (props.customValue)
+          return filtered.push(textValueToProperValue(val));
+      });
+
+      if (multipleVal || filtered.length === 0) {
+        return filtered;
+      }
+      else {
+        const val = filtered[0];
+        if (get(shouldApplyValueAsSearch))
+          updateInternalSearch(getText(val));
+
+        return [val];
+      }
     }
+
+    if (get(shouldApplyValueAsSearch) && valueToArray.length > 0)
+      updateInternalSearch(valueToArray[0]);
 
     return valueToArray;
   },
@@ -183,6 +215,7 @@ const {
   highlightedIndex,
   moveHighlight,
   applyHighlighted,
+  optionsWithSelectedHidden,
 } = useDropdownMenu<T, K>({
   itemHeight: props.itemHeight ?? (props.dense ? 30 : 48),
   keyAttr: props.keyAttr,
@@ -194,6 +227,7 @@ const {
   setValue,
   autoSelectFirst: props.autoSelectFirst,
   hideSelected: props.hideSelected,
+
 });
 
 const outlined = computed(() => get(variant) === 'outlined');
@@ -221,9 +255,10 @@ function updateSearchInput(event: any) {
   const value = event.target.value;
   set(isOpen, true);
   updateInternalSearch(value);
+  set(justOpened, false);
 }
 
-function setValue(val: T, index?: number) {
+function setValue(val: T, index?: number, skipRefocused = false) {
   if (isDefined(index))
     set(highlightedIndex, index);
 
@@ -242,11 +277,16 @@ function setValue(val: T, index?: number) {
     nextTick(() => {
       set(isOpen, false);
     });
-    updateInternalSearch();
+    if (get(shouldApplyValueAsSearch))
+      updateInternalSearch(getText(val));
+    else
+      updateInternalSearch();
+
     set(value, [val]);
   }
 
-  set(searchInputFocused, true);
+  if (!skipRefocused)
+    set(searchInputFocused, true);
 }
 
 function setInputFocus() {
@@ -278,10 +318,11 @@ watch(focusedValueIndex, (index) => {
   });
 });
 
-function moveSelectedValueHighlight(next: boolean) {
+function moveSelectedValueHighlight(event: KeyboardEvent, next: boolean) {
   if (!get(multiple))
     return;
 
+  event.preventDefault();
   const total = get(value).length;
 
   let current = get(focusedValueIndex);
@@ -304,23 +345,57 @@ function moveSelectedValueHighlight(next: boolean) {
 }
 
 const { focused: activatorFocusedWithin } = useFocusWithin(activator);
+const { focused: noDataContainerFocusedWithin } = useFocusWithin(noDataContainer);
 const { focused: menuFocusedWithin } = useFocusWithin(containerProps.ref);
-const anyFocused = logicOr(activatorFocusedWithin, menuFocusedWithin);
+const anyFocused = logicOr(activatorFocusedWithin, noDataContainerFocusedWithin, menuFocusedWithin);
+
+function textValueToProperValue(val: any): T {
+  const keyAttr = props.keyAttr;
+  if (!keyAttr)
+    return val;
+
+  const newValue = {
+    [keyAttr]: val,
+  };
+
+  const textAttr = props.textAttr;
+
+  if (textAttr)
+    newValue[textAttr] = val;
+
+  return newValue;
+}
+
+function setSearchAsValue() {
+  const searchToBeValue = get(internalSearch);
+  if (!searchToBeValue)
+    return;
+
+  const newValue: T = textValueToProperValue(searchToBeValue);
+  setValue(newValue, undefined, true);
+}
 
 // Close menu if the activator is not focused anymore
 watch(anyFocused, (focused) => {
   if (!focused) {
     set(isOpen, false);
-    updateInternalSearch();
+    if (props.customValue && get(filteredOptions).length === 0 && get(internalSearch))
+      setSearchAsValue();
+
+    if (!get(shouldApplyValueAsSearch))
+      updateInternalSearch();
   }
 });
 
 function onInputFocused() {
   set(isOpen, true);
   set(focusedValueIndex, -1);
+  get(textInput)?.select();
+  set(justOpened, true);
 }
 
 function clear() {
+  updateInternalSearch();
   emit('input', Array.isArray(props.value) ? [] : null);
 }
 
@@ -350,6 +425,26 @@ function chipListener(item: (T extends string ? T : Record<K, T>), index: number
     },
     'click.stop': () => setValueFocus(index),
     'click:close': () => setValue(item),
+  };
+}
+
+function onEnter() {
+  if (get(filteredOptions).length > 0 && get(highlightedIndex) > -1) {
+    applyHighlighted();
+  }
+  else if (get(options).length > 0 && props.customValue) {
+    setSearchAsValue();
+    if (!get(multiple))
+      set(isOpen, false);
+  }
+}
+
+function getListeners(on: Record<string, Function | undefined>, $listeners: Record<string, Function | Function[]>) {
+  const listenersFiltered = objectOmit($listeners, ['input']);
+
+  return {
+    ...(props.readOnly ? {} : on),
+    ...listenersFiltered,
   };
 }
 </script>
@@ -398,12 +493,15 @@ function chipListener(item: (T extends string ? T : Record<K, T>), index: number
           v-bind="attrs"
           data-id="activator"
           :tabindex="disabled || readOnly ? -1 : 0"
-          v-on="readOnly ? {} : on"
+          v-on="
+            // eslint-disable-next-line vue/no-deprecated-dollar-listeners-api
+            getListeners(on, $listeners)
+          "
           @click="setInputFocus()"
           @focus="setInputFocus()"
-          @keydown.enter="applyHighlighted()"
-          @keydown.left.prevent="moveSelectedValueHighlight(false)"
-          @keydown.right.prevent="moveSelectedValueHighlight(true)"
+          @keydown.enter="onEnter()"
+          @keydown.left="moveSelectedValueHighlight($event, false)"
+          @keydown.right="moveSelectedValueHighlight($event, true)"
           @keydown.up.prevent="moveHighlight(true)"
           @keydown.down.prevent="moveHighlight(false)"
         >
@@ -453,7 +551,7 @@ function chipListener(item: (T extends string ? T : Record<K, T>), index: number
                 </div>
               </RuiChip>
               <div
-                v-else
+                v-else-if="multiple || slots['selection.prepend'] || slots.selection"
                 :key="getIdentifier(item)"
                 class="flex"
               >
@@ -463,6 +561,7 @@ function chipListener(item: (T extends string ? T : Record<K, T>), index: number
                   v-bind="{ item }"
                 />
                 <slot
+                  v-if="slots.selection"
                   :index="i"
                   name="selection"
                   v-bind="{ item, chipAttrs: chipAttrs(item), chipOn: chipListener(item, i) }"
@@ -478,7 +577,7 @@ function chipListener(item: (T extends string ? T : Record<K, T>), index: number
               class="bg-transparent outline-none"
               type="text"
               :placeholder="placeholder"
-              :class="!anyFocused || disabled ? 'w-0 h-0' : 'flex-1 min-w-[4rem]'"
+              :class="(!anyFocused || disabled) && multiple ? 'w-0 h-0' : 'flex-1 min-w-[4rem]'"
               @keydown.delete="onInputDeletePressed()"
               @input="updateSearchInput($event)"
               @focus="onInputFocused()"
@@ -524,7 +623,7 @@ function chipListener(item: (T extends string ? T : Record<K, T>), index: number
     </template>
     <template #default="{ width }">
       <div
-        v-if="filteredOptions.length > 0"
+        v-if="optionsWithSelectedHidden.length > 0"
         :class="[css.menu, menuClass]"
         :style="{ width: `${width}px`, minWidth: menuWidth }"
         v-bind="virtualContainerProps"
@@ -575,11 +674,15 @@ function chipListener(item: (T extends string ? T : Record<K, T>), index: number
 
       <div
         v-else-if="!hideNoData"
+        ref="noDataContainer"
         :style="{ width: `${width}px`, minWidth: menuWidth }"
         :class="menuClass"
       >
         <slot name="no-data">
-          <div class="p-4">
+          <div
+            v-if="!customValue"
+            class="p-4"
+          >
             {{ noDataText }}
           </div>
         </slot>
@@ -680,7 +783,7 @@ function chipListener(item: (T extends string ? T : Record<K, T>), index: number
     }
 
     .value {
-      @apply flex gap-1 flex-wrap;
+      @apply flex gap-1 flex-wrap flex-1;
     }
 
     .clear {

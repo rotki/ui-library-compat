@@ -141,7 +141,7 @@ const { hasError, hasSuccess } = useFormTextDetail(
 </script>
 
 <template>
-  <div @keyup.esc.exact.stop="onLeave()">
+  <div @keydown.esc.stop="onLeave()">
     <div
       ref="activator"
       :class="[css.wrapper, wrapperClass, { 'w-full': fullWidth }]"

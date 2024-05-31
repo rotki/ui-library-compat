@@ -211,6 +211,38 @@ const autoCompletePrimitive = ref<AutoCompleteProps<string>[]>([
     label: 'Multiple',
     options: primitiveOptions,
   },
+  {
+    value: undefined,
+    variant: 'outlined',
+    label: 'Custom Value',
+    customValue: true,
+    options: primitiveOptions,
+  },
+  {
+    value: undefined,
+    dense: true,
+    variant: 'outlined',
+    label: 'Custom Value',
+    customValue: true,
+    options: primitiveOptions,
+  },
+  {
+    value: [],
+    chips: true,
+    dense: true,
+    variant: 'outlined',
+    label: 'Multiple With Custom Value',
+    customValue: true,
+    options: primitiveOptions,
+  },
+  {
+    value: ['Lorem'],
+    dense: true,
+    variant: 'outlined',
+    label: 'Multiple With Custom Value',
+    customValue: true,
+    options: primitiveOptions,
+  },
 ]);
 
 function getDisplayText(options?: Options | Options[]): string {

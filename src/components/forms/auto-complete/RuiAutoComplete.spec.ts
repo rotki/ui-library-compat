@@ -56,7 +56,7 @@ describe('autocomplete', () => {
       },
     });
     expect(wrapper.find('div[data-id=activator][tabindex=-1]').exists()).toBeTruthy();
-    expect(wrapper.find('div[data-id=activator][tabindex=-1]').text()).toMatch('Spain');
+    expect((wrapper.find('div[data-id=activator][tabindex=-1] input').element as HTMLInputElement).value).toMatch('Spain');
   });
 
   it('works with primitive options', () => {
@@ -66,11 +66,12 @@ describe('autocomplete', () => {
         value: options[4].label,
       },
     });
-    expect(wrapper.find('div[data-id=activator]').text()).toMatch('Spain');
+    expect((wrapper.find('div[data-id=activator] input').element as HTMLInputElement).value).toMatch('Spain');
   });
 
   it('value passed and emitted properly', async () => {
     const wrapper = createWrapper({
+      attachTo: document.body,
       propsData: {
         autoSelectFirst: true,
         keyAttr: 'id',
@@ -103,8 +104,6 @@ describe('autocomplete', () => {
     await nextTick();
 
     expect(document.body.querySelector('div[role=menu]')).toBeTruthy();
-
-    await nextTick();
 
     highlightedItemButton = document.body.querySelector(`button:nth-child(${selectedIndex})`) as HTMLButtonElement;
     expect(highlightedItemButton.classList).toContain('highlighted');
@@ -162,15 +161,43 @@ describe('autocomplete', () => {
 
     chips = wrapper.find('div[data-id=activator]').findAll('.rui-chip');
     expect(chips).toHaveLength(3);
-    expect(chips.at(0).text()).toBe('India');
-    expect(chips.at(1).text()).toBe('France');
-    expect(chips.at(2).text()).toBe('England');
+
+    expect(chips.at(0).text()).toBe('France');
+    expect(chips.at(1).text()).toBe('England');
+    expect(chips.at(2).text()).toBe('India');
 
     // Delete England
-    await chips.at(2).find('button[type="button"]').trigger('click');
+    await chips.at(0).find('button[type="button"]').trigger('click');
     await nextTick();
 
-    newValue = ['6', '7'];
+    newValue = ['8', '6'];
     expect(wrapper.emitted().input!.at(-1)![0]).toEqual(newValue);
+  });
+
+  it('custom value', async () => {
+    const wrapper = createWrapper({
+      propsData: {
+        autoSelectFirst: true,
+        chips: true,
+        customValue: true,
+        keyAttr: 'id',
+        options,
+        textAttr: 'label',
+        value: ['custom value'],
+      },
+    });
+
+    expect(wrapper.find('div[data-id=activator]').exists()).toBeTruthy();
+    const chips = wrapper.find('div[data-id=activator]').findAll('.rui-chip');
+    expect(chips).toHaveLength(1);
+    expect(chips.at(0).text()).toBe('custom value');
+
+    await wrapper.find('input').setValue('custom value 2');
+    await wrapper.find('[data-id=activator]').trigger('keydown.enter');
+
+    expect(wrapper.emitted().input!.at(-1)![0]).toEqual([
+      'custom value',
+      'custom value 2',
+    ]);
   });
 });

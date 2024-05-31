@@ -41,7 +41,7 @@ export function useDropdownMenu<T, K extends keyof T>({
     return options.filter(item => !isActiveItem(item));
   });
 
-  const { containerProps, list, wrapperProps } = useVirtualList<T>(
+  const { containerProps, list, scrollTo, wrapperProps } = useVirtualList<T>(
     options,
     {
       itemHeight,
@@ -149,7 +149,7 @@ export function useDropdownMenu<T, K extends keyof T>({
             highlightedElem?.focus();
         }
         else {
-          container.scrollTop = index * itemHeight;
+          scrollTo(index);
           if (get(autoFocus)) {
             const elem = get(menuRef).getElementsByClassName('highlighted')[0];
             if (elem && 'focus' in elem && typeof elem.focus === 'function')
@@ -190,8 +190,15 @@ export function useDropdownMenu<T, K extends keyof T>({
   });
 
   watch(options, () => {
-    if (get(highlightedIndex) !== -1)
-      set(highlightedIndex, 0);
+    if (get(highlightedIndex) !== -1) {
+      if (get(autoSelectFirst)) {
+        set(highlightedIndex, 0);
+      }
+      else {
+        set(highlightedIndex, -1);
+        scrollTo(0);
+      }
+    }
   });
 
   const moveHighlight = (up: boolean) => {
@@ -237,6 +244,7 @@ export function useDropdownMenu<T, K extends keyof T>({
     itemIndexInValue,
     menuWidth,
     moveHighlight,
+    optionsWithSelectedHidden: options,
     renderedData,
     toggle,
     valueKey,

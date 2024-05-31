@@ -17,6 +17,6 @@ describe('forms/Auto Completes', () => {
     cy.get('div[role=menu]').should('be.visible');
     cy.get('div[role=menu] button:first-child').click();
 
-    cy.get('@firstAutoComplete').find('div[class*=_value_]').should('contain.text', 'Germany');
+    cy.get('@firstAutoComplete').find('input').should('have.value', 'Germany');
   });
 });
