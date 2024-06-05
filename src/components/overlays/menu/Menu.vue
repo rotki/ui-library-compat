@@ -11,8 +11,8 @@ export interface MenuProps {
   openDelay?: number;
   closeDelay?: number;
   popper?: PopperOptions;
-  wrapperClass?: string;
-  menuClass?: string;
+  wrapperClass?: any;
+  menuClass?: any;
   closeOnContentClick?: boolean;
   persistOnActivatorClick?: boolean;
   hint?: string;
