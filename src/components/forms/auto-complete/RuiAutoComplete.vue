@@ -448,14 +448,14 @@ function getListeners(on: Record<string, Function | undefined>, $listeners: Reco
   };
 }
 
-function setInputSelectionRange(start: number, end: number) {
+function setSelectionRange(start: number, end: number) {
   set(searchInputFocused, true);
   get(textInput)?.setSelectionRange?.(start, end);
 }
 
 defineExpose({
-  setInputFocus,
-  setInputSelectionRange,
+  focus: setInputFocus,
+  setSelectionRange,
 });
 </script>
 
