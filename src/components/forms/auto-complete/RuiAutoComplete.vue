@@ -447,6 +447,16 @@ function getListeners(on: Record<string, Function | undefined>, $listeners: Reco
     ...listenersFiltered,
   };
 }
+
+function setSelectionRange(start: number, end: number) {
+  set(searchInputFocused, true);
+  get(textInput)?.setSelectionRange?.(start, end);
+}
+
+defineExpose({
+  focus: setInputFocus,
+  setSelectionRange,
+});
 </script>
 
 <template>
@@ -459,6 +469,10 @@ function getListeners(on: Record<string, Function | undefined>, $listeners: Reco
       fullWidth: true,
       persistOnActivatorClick: true,
       ...menuOptions,
+      menuClass: [
+        { hidden: (optionsWithSelectedHidden.length === 0 && customValue && !slots['no-data']) },
+        menuOptions?.menuClass,
+      ],
       errorMessages,
       successMessages,
       hint,

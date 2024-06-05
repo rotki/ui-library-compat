@@ -138,26 +138,28 @@ export function useDropdownMenu<T, K extends keyof T>({
 
   function adjustScrollByHighlightedIndex(smooth: boolean = false) {
     const index = get(highlightedIndex);
-    nextTick(() => {
-      const container = get(menuRef)?.parentElement;
-      if (container && index > -1) {
-        const highlightedElem = get(menuRef).getElementsByClassName('highlighted')[0];
+    if (index > -1) {
+      nextTick(() => {
+        const container = get(menuRef)?.parentElement;
+        if (container) {
+          const highlightedElem = get(menuRef).getElementsByClassName('highlighted')[0];
 
-        if (highlightedElem) {
-          highlightedElem.scrollIntoView?.({ behavior: smooth ? 'smooth' : 'auto', block: 'nearest' });
-          if (get(autoFocus) && 'focus' in highlightedElem && typeof highlightedElem.focus === 'function')
-            highlightedElem?.focus();
-        }
-        else {
-          scrollTo(index);
-          if (get(autoFocus)) {
-            const elem = get(menuRef).getElementsByClassName('highlighted')[0];
-            if (elem && 'focus' in elem && typeof elem.focus === 'function')
-              elem.focus();
+          if (highlightedElem) {
+            highlightedElem.scrollIntoView?.({ behavior: smooth ? 'smooth' : 'auto', block: 'nearest' });
+            if (get(autoFocus) && 'focus' in highlightedElem && typeof highlightedElem.focus === 'function')
+              highlightedElem?.focus();
+          }
+          else {
+            scrollTo(index);
+            if (get(autoFocus)) {
+              const elem = get(menuRef).getElementsByClassName('highlighted')[0];
+              if (elem && 'focus' in elem && typeof elem.focus === 'function')
+                elem.focus();
+            }
           }
         }
-      }
-    });
+      });
+    }
   }
 
   function updateOpen(open: boolean) {
@@ -193,11 +195,15 @@ export function useDropdownMenu<T, K extends keyof T>({
     if (get(highlightedIndex) !== -1) {
       if (get(autoSelectFirst)) {
         set(highlightedIndex, 0);
+        adjustScrollByHighlightedIndex();
       }
       else {
         set(highlightedIndex, -1);
         scrollTo(0);
       }
+    }
+    else {
+      scrollTo(0);
     }
   });
 
