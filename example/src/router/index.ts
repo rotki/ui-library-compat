@@ -153,6 +153,11 @@ const router = new VueRouter({
       component: () => import('@/views/AutoCompleteView.vue'),
     },
     {
+      path: '/navigation-drawers',
+      name: 'navigation-drawers',
+      component: () => import('@/views/NavigationDrawerView.vue'),
+    },
+    {
       path: '/breakpoint',
       name: 'breakpoint',
       component: () => import('@/views/BreakpointView.vue'),

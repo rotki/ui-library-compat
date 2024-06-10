@@ -117,3 +117,9 @@ export function getTextToken(string: any): string {
 
   return string.toString().toLowerCase().replace(/[^\dA-Za-z]/g, '');
 }
+
+export function transformPropsUnit(value?: string | number): string | undefined {
+  if (value === undefined || (typeof value === 'string' && isNaN(Number(value))))
+    return value;
+  return `${value}px`;
+}

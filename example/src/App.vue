@@ -34,6 +34,7 @@ const navigation = ref([
       { to: { name: 'bottom-sheets' }, title: 'Bottom Sheets' },
       { to: { name: 'color-pickers' }, title: 'Color Picker' },
       { to: { name: 'auto-completes' }, title: 'Auto Completes' },
+      { to: { name: 'navigation-drawers' }, title: 'Navigation Drawer' },
     ],
   },
   {

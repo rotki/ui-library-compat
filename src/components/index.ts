@@ -151,6 +151,10 @@ import {
   type Props as AutoCompleteProps,
   default as RuiAutoComplete,
 } from '@/components/forms/auto-complete/RuiAutoComplete.vue';
+import {
+  type Props as NavigationDrawerProps,
+  default as RuiNavigationDrawer,
+} from '@/components/overlays/navigation-drawer/NavigationDrawer.vue';
 import type {
   TableColumn as DataTableColumn,
   SortColumn as DataTableSortColumn,
@@ -197,6 +201,7 @@ export {
   RuiDialog,
   RuiColorPicker,
   RuiAutoComplete,
+  RuiNavigationDrawer,
   ProgressProps,
   ChipProps,
   TextFieldProps,
@@ -239,4 +244,5 @@ export {
   DialogProps,
   ColorPickerProps,
   AutoCompleteProps,
+  NavigationDrawerProps,
 };
