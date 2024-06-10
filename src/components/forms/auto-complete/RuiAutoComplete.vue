@@ -390,7 +390,9 @@ watch(anyFocused, (focused) => {
 function onInputFocused() {
   set(isOpen, true);
   set(focusedValueIndex, -1);
-  get(textInput)?.select();
+  if (get(shouldApplyValueAsSearch))
+    get(textInput)?.select();
+
   set(justOpened, true);
 }
 
