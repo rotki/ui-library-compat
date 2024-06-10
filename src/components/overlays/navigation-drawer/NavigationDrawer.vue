@@ -135,11 +135,11 @@ const on = computed(() => ({
 
 <style lang="scss" module>
 .overlay {
-  @apply absolute top-0 left-0 w-full h-full bg-black/[0.5] z-[7];
+  @apply absolute top-0 left-0 w-full h-full bg-black/[0.5] z-[10000];
 }
 
 .content {
-  @apply transition-all top-0 h-full fixed text-rui-text bg-white z-[7];
+  @apply transition-all top-0 h-full fixed text-rui-text bg-white z-[10000];
 
   &.left {
     @apply -translate-x-full left-0;
