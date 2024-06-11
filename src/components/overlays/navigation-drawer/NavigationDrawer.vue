@@ -123,6 +123,7 @@ const on = computed(() => ({
             [css[position]]: position,
             [css.mini]: miniVariant,
             [css.temporary]: temporary,
+            [css['with-overlay']]: overlay,
           },
         ]"
         v-bind="getRootAttrs(attrs)"
@@ -139,7 +140,7 @@ const on = computed(() => ({
 }
 
 .content {
-  @apply transition-all top-0 h-full fixed text-rui-text bg-white z-[10000];
+  @apply transition-all top-0 h-full fixed text-rui-text bg-white z-[7];
 
   &.left {
     @apply -translate-x-full left-0;
@@ -147,6 +148,10 @@ const on = computed(() => ({
 
   &.right {
     @apply translate-x-full right-0;
+  }
+
+  &.with-overlay {
+    @apply z-[10000];
   }
 
   &.visible {
