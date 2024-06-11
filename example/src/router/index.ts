@@ -158,6 +158,11 @@ const router = new VueRouter({
       component: () => import('@/views/NavigationDrawerView.vue'),
     },
     {
+      path: '/notification',
+      name: 'notification',
+      component: () => import('@/views/NotificationView.vue'),
+    },
+    {
       path: '/breakpoint',
       name: 'breakpoint',
       component: () => import('@/views/BreakpointView.vue'),
