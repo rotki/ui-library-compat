@@ -63,7 +63,7 @@ watchImmediate(value, (display) => {
       leave-to-class="opacity-0"
     >
       <div
-        class="top-2 right-2 fixed drop-shadow-lg z-50"
+        class="top-[3.5rem] right-2 fixed drop-shadow-lg rounded-sm z-50"
         :class="{
           'bg-white dark:bg-[#363636]': !theme,
           'bg-white text-rui-light-text': theme === 'light',

@@ -21,7 +21,7 @@ const render: StoryFn<NotificationProps> = args => ({
     <div>
       <Button @click="value = !value"> Click </Button>
       <Notification v-bind="args" v-model='value'>
-        <Card>I am a notification</Card>
+        <div class='m-4'>I am a notification</div>
       </Notification>
     </div>
   `,
