@@ -657,6 +657,7 @@ defineExpose({
             :active="isActiveItem(item)"
             :size="dense ? 'sm' : undefined"
             :value="getIdentifier(item)"
+            tabindex="0"
             variant="list"
             :class="{
               highlighted: highlightedIndex === index,
@@ -763,7 +764,7 @@ defineExpose({
       &.disabled {
         ~ .fieldset {
           @apply border-dotted;
-          @apply border-black/[0.23] #{!important};
+          @apply border border-black/[0.23] #{!important};
         }
       }
 
