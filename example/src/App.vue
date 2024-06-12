@@ -35,6 +35,7 @@ const navigation = ref([
       { to: { name: 'color-pickers' }, title: 'Color Picker' },
       { to: { name: 'auto-completes' }, title: 'Auto Completes' },
       { to: { name: 'navigation-drawers' }, title: 'Navigation Drawer' },
+      { to: { name: 'notification' }, title: 'Notification' },
     ],
   },
   {

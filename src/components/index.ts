@@ -155,6 +155,7 @@ import {
   type Props as NavigationDrawerProps,
   default as RuiNavigationDrawer,
 } from '@/components/overlays/navigation-drawer/NavigationDrawer.vue';
+import RuiNotification, { type NotificationProps } from '@/components/overlays/notification/Notification.vue';
 import type {
   TableColumn as DataTableColumn,
   SortColumn as DataTableSortColumn,
@@ -202,6 +203,7 @@ export {
   RuiColorPicker,
   RuiAutoComplete,
   RuiNavigationDrawer,
+  RuiNotification,
   ProgressProps,
   ChipProps,
   TextFieldProps,
@@ -245,4 +247,5 @@ export {
   ColorPickerProps,
   AutoCompleteProps,
   NavigationDrawerProps,
+  NotificationProps,
 };
