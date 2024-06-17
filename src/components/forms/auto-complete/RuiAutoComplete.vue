@@ -441,6 +441,13 @@ function onEnter() {
   }
 }
 
+function onTab(event: KeyboardEvent) {
+  if (get(isOpen) && get(filteredOptions).length > 0 && get(highlightedIndex) > -1 && !get(multiple)) {
+    applyHighlighted();
+    event.preventDefault();
+  }
+}
+
 function getListeners(on: Record<string, Function | undefined>, $listeners: Record<string, Function | Function[]>) {
   const listenersFiltered = objectOmit($listeners, ['input']);
 
@@ -516,6 +523,7 @@ defineExpose({
           @click="setInputFocus()"
           @focus="setInputFocus()"
           @keydown.enter="onEnter()"
+          @keydown.tab="onTab($event)"
           @keydown.left="moveSelectedValueHighlight($event, false)"
           @keydown.right="moveSelectedValueHighlight($event, true)"
           @keydown.up.prevent="moveHighlight(true)"
