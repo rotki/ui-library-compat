@@ -172,6 +172,20 @@ describe('autocomplete', () => {
 
     newValue = ['8', '6'];
     expect(wrapper.emitted().input!.at(-1)![0]).toEqual(newValue);
+
+    // Delete option should also remove selected value with that option
+    await wrapper.setProps({
+      value: newValue,
+    });
+    const newOptions = options.filter(item => item.id !== '8');
+
+    await wrapper.setProps({
+      options: newOptions,
+    });
+    await nextTick();
+
+    newValue = ['6'];
+    expect(wrapper.emitted().input!.at(-1)![0]).toEqual(newValue);
   });
 
   it('custom value', async () => {
