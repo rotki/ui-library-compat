@@ -144,17 +144,31 @@ function input(value: ModelValue) {
   emit('input', value);
 }
 
+function setSelected(selected: T[]) {
+  const keyAttr = props.keyAttr;
+  const selection = keyAttr && !props.returnObject ? selected.map(item => item[keyAttr]) : selected;
+
+  if (get(multiple))
+    return input(selection);
+
+  if (selection.length === 0)
+    return input(null);
+
+  return input(selection[0]);
+}
+
 const value = computed<(T extends string ? T : Record<K, T>)[]>({
   get: () => {
     const value = props.value;
     const keyAttr = props.keyAttr;
     const multipleVal = get(multiple);
     const valueToArray = value ? (Array.isArray(value) ? value : [value]) : [];
+    const optionsVal = get(options);
 
     if (keyAttr && !props.returnObject) {
       const filtered: T[] = [];
       valueToArray.forEach((val) => {
-        const inOptions = get(options).find(item => getIdentifier(item) === val);
+        const inOptions = optionsVal.find(item => getIdentifier(item) === val);
 
         if (inOptions)
           return filtered.push(inOptions);
@@ -162,7 +176,11 @@ const value = computed<(T extends string ? T : Record<K, T>)[]>({
           return filtered.push(textValueToProperValue(val));
       });
 
-      if (multipleVal || filtered.length === 0) {
+      if (multipleVal) {
+        return filtered;
+      }
+      else if (filtered.length === 0 && get(shouldApplyValueAsSearch)) {
+        updateInternalSearch();
         return filtered;
       }
       else {
@@ -174,23 +192,35 @@ const value = computed<(T extends string ? T : Record<K, T>)[]>({
       }
     }
 
-    if (get(shouldApplyValueAsSearch) && valueToArray.length > 0)
-      updateInternalSearch(valueToArray[0]);
+    const filtered: T[] = [];
+    valueToArray.forEach((val) => {
+      const inOptions = optionsVal.find(item => item === val);
 
-    return valueToArray;
+      if (inOptions)
+        return filtered.push(inOptions);
+      if (props.customValue)
+        return filtered.push(val);
+    });
+
+    if (get(shouldApplyValueAsSearch)) {
+      if (filtered.length > 0)
+        updateInternalSearch(filtered[0]);
+      else
+        updateInternalSearch();
+    }
+
+    return filtered;
   },
   set: (selected: T[]) => {
-    const keyAttr = props.keyAttr;
-    const selection = keyAttr && !props.returnObject ? selected.map(item => item[keyAttr]) : selected;
-
-    if (get(multiple))
-      return input(selection);
-
-    if (selection.length === 0)
-      return input(null);
-
-    return input(selection[0]);
+    setSelected(selected);
   },
+});
+
+watch(options, () => {
+  if (props.customValue)
+    return;
+
+  setSelected(get(value));
 });
 
 const valueSet = computed(() => get(value).length > 0);
