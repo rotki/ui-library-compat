@@ -176,11 +176,10 @@ const value = computed<(T extends string ? T : Record<K, T>)[]>({
           return filtered.push(textValueToProperValue(val));
       });
 
-      if (multipleVal) {
-        return filtered;
-      }
-      else if (filtered.length === 0 && get(shouldApplyValueAsSearch)) {
-        updateInternalSearch();
+      if (multipleVal || filtered.length === 0) {
+        if (get(shouldApplyValueAsSearch))
+          updateInternalSearch();
+
         return filtered;
       }
       else {
