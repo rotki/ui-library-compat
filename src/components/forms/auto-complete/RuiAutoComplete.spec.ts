@@ -122,7 +122,23 @@ describe('autocomplete', () => {
     expect(highlightedItemButton.classList).toContain('highlighted');
 
     await wrapper.find('[data-id=activator]').trigger('keydown.enter');
-    expect(wrapper.emitted().input!.at(-1)![0]).toBe(newSelectedIndex.toString());
+    const newSelectedIndexToString = newSelectedIndex.toString();
+    expect(wrapper.emitted().input!.at(-1)![0]).toBe(newSelectedIndexToString);
+
+    // Delete option should also remove selected value with that option
+    const newOptions = options.filter(item => item.id !== newSelectedIndexToString);
+
+    await wrapper.setProps({
+      options: newOptions,
+    });
+    await nextTick();
+
+    expect(wrapper.emitted().input!.at(-1)![0]).toEqual(null);
+
+    // doesn't break when use chips
+    await wrapper.setProps({
+      chips: true,
+    });
   });
 
   it('multiple value', async () => {
