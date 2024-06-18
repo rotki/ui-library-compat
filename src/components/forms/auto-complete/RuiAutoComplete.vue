@@ -615,7 +615,7 @@ defineExpose({
                   v-bind="{ item }"
                 />
                 <slot
-                  v-if="slots.selection"
+                  v-if="multiple || slots.selection"
                   :index="i"
                   name="selection"
                   v-bind="{ item, chipAttrs: chipAttrs(item), chipOn: chipListener(item, i) }"
