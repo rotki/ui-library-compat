@@ -177,14 +177,14 @@ const value = computed<(T extends string ? T : Record<K, T>)[]>({
       });
 
       if (multipleVal || filtered.length === 0) {
-        if (get(shouldApplyValueAsSearch))
+        if (get(shouldApplyValueAsSearch) && !get(searchInputFocused))
           updateInternalSearch();
 
         return filtered;
       }
       else {
         const val = filtered[0];
-        if (get(shouldApplyValueAsSearch))
+        if (get(shouldApplyValueAsSearch) && !get(searchInputFocused))
           updateInternalSearch(getText(val));
 
         return [val];
@@ -193,7 +193,7 @@ const value = computed<(T extends string ? T : Record<K, T>)[]>({
 
     const filtered: T[] = [];
     valueToArray.forEach((val) => {
-      const inOptions = optionsVal.find(item => item === val);
+      const inOptions = optionsVal.find(item => getIdentifier(item) === getIdentifier(val));
 
       if (inOptions)
         return filtered.push(inOptions);
@@ -201,7 +201,7 @@ const value = computed<(T extends string ? T : Record<K, T>)[]>({
         return filtered.push(val);
     });
 
-    if (get(shouldApplyValueAsSearch)) {
+    if (get(shouldApplyValueAsSearch) && !get(searchInputFocused)) {
       if (filtered.length > 0)
         updateInternalSearch(filtered[0]);
       else
@@ -215,8 +215,8 @@ const value = computed<(T extends string ? T : Record<K, T>)[]>({
   },
 });
 
-watch(options, () => {
-  if (props.customValue)
+watch(options, (curr, old) => {
+  if (isEqual(curr, old) || props.customValue)
     return;
 
   setSelected(get(value));
@@ -459,14 +459,16 @@ function chipListener(item: (T extends string ? T : Record<K, T>), index: number
   };
 }
 
-function onEnter() {
-  if (get(filteredOptions).length > 0 && get(highlightedIndex) > -1) {
+function onEnter(event: KeyboardEvent) {
+  if (get(filteredOptions).length > 0 && get(highlightedIndex) > -1 && get(isOpen)) {
     applyHighlighted();
+    event.preventDefault();
   }
   else if (get(options).length > 0 && props.customValue) {
     setSearchAsValue();
     if (!get(multiple))
       set(isOpen, false);
+    event.preventDefault();
   }
 }
 
@@ -551,7 +553,7 @@ defineExpose({
           "
           @click="setInputFocus()"
           @focus="setInputFocus()"
-          @keydown.enter="onEnter()"
+          @keydown.enter="onEnter($event)"
           @keydown.tab="onTab($event)"
           @keydown.left="moveSelectedValueHighlight($event, false)"
           @keydown.right="moveSelectedValueHighlight($event, true)"
