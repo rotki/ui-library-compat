@@ -348,7 +348,7 @@ watch(focusedValueIndex, (index) => {
 });
 
 function moveSelectedValueHighlight(event: KeyboardEvent, next: boolean) {
-  if (!get(multiple))
+  if (!get(multiple) || get(internalSearch).length > 0)
     return;
 
   event.preventDefault();
@@ -493,6 +493,16 @@ function setSelectionRange(start: number, end: number) {
   get(textInput)?.setSelectionRange?.(start, end);
 }
 
+const inputClass: ComputedRef<string> = computed(() => {
+  if ((!get(anyFocused) || get(disabled)) && !get(shouldApplyValueAsSearch))
+    return 'w-0 h-0';
+
+  if (get(internalSearch))
+    return 'flex-1 min-w-[4rem]';
+
+  return 'flex-1 min-w-0';
+});
+
 defineExpose({
   focus: setInputFocus,
   setSelectionRange,
@@ -632,7 +642,7 @@ defineExpose({
               class="bg-transparent outline-none"
               type="text"
               :placeholder="placeholder"
-              :class="(!anyFocused || disabled) && multiple ? 'w-0 h-0' : 'flex-1 min-w-[4rem]'"
+              :class="inputClass"
               @keydown.delete="onInputDeletePressed()"
               @input="updateSearchInput($event)"
               @focus="onInputFocused()"
