@@ -417,7 +417,6 @@ watch(anyFocused, (focused) => {
 });
 
 function onInputFocused() {
-  set(isOpen, true);
   set(focusedValueIndex, -1);
   if (get(shouldApplyValueAsSearch))
     get(textInput)?.select();
@@ -470,6 +469,10 @@ function onEnter(event: KeyboardEvent) {
       set(isOpen, false);
     event.preventDefault();
   }
+  else if (!get(isOpen)) {
+    set(isOpen, true);
+    event.preventDefault();
+  }
 }
 
 function onTab(event: KeyboardEvent) {
@@ -502,6 +505,13 @@ const inputClass: ComputedRef<string> = computed(() => {
 
   return 'flex-1 min-w-0';
 });
+
+function arrowClicked(event: any) {
+  if (get(isOpen)) {
+    set(isOpen, false);
+    event.stopPropagation();
+  }
+}
 
 defineExpose({
   focus: setInputFocus,
@@ -662,7 +672,10 @@ defineExpose({
             />
           </span>
 
-          <span :class="css.icon__wrapper">
+          <span
+            :class="css.icon__wrapper"
+            @click="arrowClicked($event)"
+          >
             <RuiIcon
               :class="[css.icon, { 'rotate-180': open }]"
               :size="dense ? 24 : 32"
