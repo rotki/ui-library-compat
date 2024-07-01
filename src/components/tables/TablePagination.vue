@@ -165,7 +165,7 @@ function onLast() {
     <div :class="css.navigation">
       <Button
         :size="dense ? 'sm' : undefined"
-        :disabled="!hasPrev"
+        :disabled="!hasPrev || loading"
         variant="text"
         icon
         @click="onFirst()"
@@ -174,7 +174,7 @@ function onLast() {
       </Button>
       <Button
         :size="dense ? 'sm' : undefined"
-        :disabled="!hasPrev"
+        :disabled="!hasPrev || loading"
         variant="text"
         icon
         @click="onPrev()"
@@ -183,7 +183,7 @@ function onLast() {
       </Button>
       <Button
         :size="dense ? 'sm' : undefined"
-        :disabled="!hasNext"
+        :disabled="!hasNext || loading"
         variant="text"
         icon
         @click="onNext()"
@@ -192,7 +192,7 @@ function onLast() {
       </Button>
       <Button
         :size="dense ? 'sm' : undefined"
-        :disabled="!hasNext"
+        :disabled="!hasNext || loading"
         variant="text"
         icon
         @click="onLast()"
