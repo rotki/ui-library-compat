@@ -4,16 +4,14 @@ import Tabs from '@/components/tabs/tabs/Tabs.vue';
 import Tab from '@/components/tabs/tab/Tab.vue';
 import { RouterLinkStub } from '~/tests/stubs/RouterLinkStub';
 
-function createWrapper(options?: any) {
+function createWrapper(options: any = {}, customTabValue: boolean = false) {
   return mount(Tabs, {
     ...options,
     slots: {
-      default: [
-        `<Tab>Tab 1</Tab>`,
-        `<Tab>Tab 2</Tab>`,
-        `<Tab>Tab 3</Tab>`,
-        `<Tab>Tab 4</Tab>`,
-      ],
+      default: [...new Array(4).keys()].map(item =>
+        customTabValue
+          ? `<Tab value="tab-${item}">Tab ${item}</Tab>`
+          : `<Tab>Tab ${item}</Tab>`),
     },
     stubs: {
       RouterLink: RouterLinkStub,
@@ -40,7 +38,7 @@ describe('tabs/Tabs', () => {
   });
 
   it('pass vertical props', async () => {
-    const wrapper = createWrapper({});
+    const wrapper = createWrapper();
 
     expect(wrapper.classes()).not.toEqual(
       expect.arrayContaining([expect.stringMatching(/_tabs--vertical_/)]),
@@ -60,7 +58,7 @@ describe('tabs/Tabs', () => {
   });
 
   it('pass grow props', async () => {
-    const wrapper = createWrapper({});
+    const wrapper = createWrapper();
 
     expect(wrapper.find('div[class*=tabs-bar]').classes()).not.toEqual(
       expect.arrayContaining([expect.stringMatching(/_tabs-bar--grow/)]),
@@ -79,7 +77,7 @@ describe('tabs/Tabs', () => {
   });
 
   it('pass disabled props', async () => {
-    const wrapper = createWrapper({});
+    const wrapper = createWrapper();
 
     expect(wrapper.find('button').attributes('disabled')).toBeUndefined();
 
@@ -91,7 +89,7 @@ describe('tabs/Tabs', () => {
   });
 
   it('pass align props', async () => {
-    const wrapper = createWrapper({});
+    const wrapper = createWrapper();
 
     expect(wrapper.find('button').classes()).toEqual(
       expect.arrayContaining([expect.stringMatching(/_tab--center_/)]),
@@ -140,5 +138,18 @@ describe('tabs/Tabs', () => {
     await buttons.at(3).trigger('click');
     await nextTick();
     expect(get(value)).toBe(3);
+  });
+
+  it ('works with custom tab value', async () => {
+    const wrapper = createWrapper({}, true);
+
+    await nextTick();
+
+    const buttons = wrapper.findAll('div[class*=_tabs-wrapper] > button');
+
+    expect(buttons).toHaveLength(4);
+    expect(buttons.at(0).classes()).toEqual(
+      expect.arrayContaining([expect.stringMatching(/active-tab/)]),
+    );
   });
 });

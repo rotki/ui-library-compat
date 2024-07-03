@@ -62,7 +62,7 @@ const children = computed(() => {
         || tab.componentOptions?.propsData
         || {}) as TabProps;
 
-      let tabValue: string | number = propsData?.tabValue ?? index;
+      let tabValue: string | number = propsData?.value ?? index;
       if (propsData.link !== false && propsData.to)
         tabValue = propsData.to;
 
@@ -71,7 +71,7 @@ const children = computed(() => {
       const newProps = {
         ...inheritedProps,
         ...propsData,
-        tabValue,
+        value: tabValue,
         active,
       };
 
@@ -160,8 +160,8 @@ function applyNewValue(onlyLink = false) {
     let newValue: string | number = get(value) || 0;
     enabledChildren.forEach((child, index) => {
       const props = child.node.componentOptions?.propsData as TabProps;
-      if (!onlyLink && index === 0 && props.tabValue)
-        newValue = props.tabValue;
+      if (!onlyLink && index === 0 && props.value)
+        newValue = props.value;
 
       if (props.link !== false && props.to && isPathMatch(props.to, props))
         newValue = props.to;
@@ -192,7 +192,8 @@ const { top, bottom, left, right } = toRefs(arrivedState);
 const { trigger: triggerHorizontal, stop: stopHorizontal } = watchTriggerable(
   [wrapperWidth, width],
   ([ww, w]) => {
-    set(showArrows, ww > w);
+    if (w > 0)
+      set(showArrows, ww > w);
   },
   {
     eventFilter: throttleFilter(50),
@@ -202,7 +203,8 @@ const { trigger: triggerHorizontal, stop: stopHorizontal } = watchTriggerable(
 const { trigger: triggerVertical, stop: stopVertical } = watchTriggerable(
   [wrapperHeight, height],
   ([wh, h]) => {
-    set(showArrows, wh > h);
+    if (h > 0)
+      set(showArrows, wh > h);
   },
   {
     eventFilter: throttleFilter(500),
