@@ -1,12 +1,15 @@
 import type { Ref } from 'vue';
 
-export interface DropdownOptions<T, K> {
+export interface DropdownItemAttr<T, K> {
+  keyAttr?: K;
+  textAttr?: K | ((item: T) => string);
+}
+
+export interface DropdownOptions<T, K> extends DropdownItemAttr<T, K> {
   options: Ref<T[]>;
   dense?: Ref<boolean>;
   value: Ref<T | T[] | undefined>;
   menuRef: Ref<HTMLElement>;
-  keyAttr?: K;
-  textAttr?: K | ((item: T) => string);
   appendWidth?: number;
   prependWidth?: number;
   itemHeight?: number;
@@ -16,6 +19,35 @@ export interface DropdownOptions<T, K> {
   setValue?: (val: T) => void;
   hideSelected?: boolean;
 }
+
+export function useDropdownOptionProperty<T, K extends keyof T>({
+  keyAttr,
+  textAttr,
+}: DropdownItemAttr<T, K>) {
+  function getText(item: T): T[K] | T | string {
+    if (textAttr) {
+      if (typeof textAttr === 'function')
+        return textAttr(item);
+
+      else
+        return item[textAttr];
+    }
+
+    return item;
+  }
+
+  function getIdentifier(item: T): T[K] | T {
+    if (keyAttr)
+      return item[keyAttr];
+
+    return item;
+  }
+
+  return {
+    getIdentifier,
+    getText,
+  };
+};
 
 export function useDropdownMenu<T, K extends keyof T>({
   appendWidth,
@@ -39,6 +71,11 @@ export function useDropdownMenu<T, K extends keyof T>({
       return options;
 
     return options.filter(item => !isActiveItem(item));
+  });
+
+  const { getIdentifier, getText } = useDropdownOptionProperty({
+    keyAttr,
+    textAttr,
   });
 
   const { containerProps, list, scrollTo, wrapperProps } = useVirtualList<T>(
@@ -97,25 +134,6 @@ export function useDropdownMenu<T, K extends keyof T>({
 
   function toggle(state: boolean = false) {
     set(isOpen, state);
-  }
-
-  function getText(item: T): T[K] | T | string {
-    if (textAttr) {
-      if (typeof textAttr === 'function')
-        return textAttr(item);
-
-      else
-        return item[textAttr];
-    }
-
-    return item;
-  }
-
-  function getIdentifier(item: T): T[K] | T {
-    if (keyAttr)
-      return item[keyAttr];
-
-    return item;
   }
 
   function itemIndexInValue(item: T): number {
