@@ -6,7 +6,6 @@ import RuiIcon from '@/components/icons/Icon.vue';
 import RuiChip from '@/components/chips/Chip.vue';
 import RuiMenu, { type MenuProps } from '@/components/overlays/menu/Menu.vue';
 import RuiProgress from '@/components/progress/Progress.vue';
-import type { Ref } from 'vue';
 
 export type T = any;
 
@@ -521,6 +520,13 @@ function arrowClicked(event: any) {
   }
 }
 
+const renderedOptions = ref([]);
+
+const menuMinHeight: ComputedRef<number> = computed(() => {
+  const renderedOptionsData = get(renderedOptions).slice(0, 5);
+  return renderedOptionsData.reduce((currentValue, item: typeof RuiButton) => currentValue + item.$el.offsetHeight, 0);
+});
+
 defineExpose({
   focus: setInputFocus,
   setSelectionRange,
@@ -711,7 +717,7 @@ defineExpose({
       <div
         v-if="optionsWithSelectedHidden.length > 0"
         :class="[css.menu, menuClass]"
-        :style="{ width: `${width}px`, minWidth: menuWidth }"
+        :style="{ width: `${width}px`, minWidth: menuWidth, minHeight: `${menuMinHeight}px` }"
         v-bind="virtualContainerProps"
         @scroll="containerProps.onScroll"
         @keydown.up.prevent="moveHighlight(true)"
@@ -723,7 +729,8 @@ defineExpose({
         >
           <RuiButton
             v-for="({ item, index }) in renderedData"
-            :key="index"
+            ref="renderedOptions"
+            :key="getIdentifier(item)"
             :active="isActiveItem(item)"
             :size="dense ? 'sm' : undefined"
             :value="getIdentifier(item)"
