@@ -106,8 +106,12 @@ const {
 
 const textInput = ref();
 const activator = ref();
-const noDataContainer = ref();
 const menuRef = ref();
+const menuWrapperRef = ref();
+
+const { focused: activatorFocusedWithin } = useFocusWithin(activator);
+const { focused: menuWrapperFocusedWithin } = useFocusWithin(menuWrapperRef);
+const anyFocused = logicOr(activatorFocusedWithin, menuWrapperFocusedWithin);
 
 const multiple = computed(() => Array.isArray(props.value));
 
@@ -186,14 +190,14 @@ const value = computed<(T extends string ? T : Record<K, T>)[]>({
       });
 
       if (multipleVal || filtered.length === 0) {
-        if (get(shouldApplyValueAsSearch) && !get(searchInputFocused))
+        if (get(shouldApplyValueAsSearch) && !get(anyFocused))
           updateInternalSearch();
 
         return filtered;
       }
       else {
         const val = filtered[0];
-        if (get(shouldApplyValueAsSearch) && !get(searchInputFocused))
+        if (get(shouldApplyValueAsSearch) && !get(anyFocused))
           updateInternalSearch(getText(val));
 
         return [val];
@@ -210,7 +214,7 @@ const value = computed<(T extends string ? T : Record<K, T>)[]>({
         return filtered.push(val);
     });
 
-    if (get(shouldApplyValueAsSearch) && !get(searchInputFocused)) {
+    if (get(shouldApplyValueAsSearch) && !get(anyFocused)) {
       if (filtered.length > 0)
         updateInternalSearch(filtered[0]);
       else
@@ -380,11 +384,6 @@ function moveSelectedValueHighlight(event: KeyboardEvent, next: boolean) {
   }
 }
 
-const { focused: activatorFocusedWithin } = useFocusWithin(activator);
-const { focused: noDataContainerFocusedWithin } = useFocusWithin(noDataContainer);
-const { focused: menuFocusedWithin } = useFocusWithin(containerProps.ref);
-const anyFocused = logicOr(activatorFocusedWithin, noDataContainerFocusedWithin, menuFocusedWithin);
-
 function textValueToProperValue(val: any): T {
   const keyAttr = props.keyAttr;
   if (!keyAttr)
@@ -428,7 +427,8 @@ function onInputFocused() {
   if (get(shouldApplyValueAsSearch))
     get(textInput)?.select();
 
-  set(justOpened, true);
+  if (!get(isOpen))
+    set(justOpened, true);
 }
 
 function clear() {
@@ -523,7 +523,7 @@ function arrowClicked(event: any) {
 const renderedOptions = ref([]);
 
 const menuMinHeight: ComputedRef<number> = computed(() => {
-  const renderedOptionsData = get(renderedOptions).slice(0, 5);
+  const renderedOptionsData = get(renderedOptions).slice(0, Math.min(5, get(renderedData).length));
   return renderedOptionsData.reduce((currentValue, item: typeof RuiButton) => currentValue + item.$el.offsetHeight, 0);
 });
 
@@ -714,72 +714,73 @@ defineExpose({
       </slot>
     </template>
     <template #default="{ width }">
-      <div
-        v-if="optionsWithSelectedHidden.length > 0"
-        :class="[css.menu, menuClass]"
-        :style="{ width: `${width}px`, minWidth: menuWidth, minHeight: `${menuMinHeight}px` }"
-        v-bind="virtualContainerProps"
-        @scroll="containerProps.onScroll"
-        @keydown.up.prevent="moveHighlight(true)"
-        @keydown.down.prevent="moveHighlight(false)"
-      >
+      <div ref="menuWrapperRef">
         <div
-          v-bind="wrapperProps"
-          ref="menuRef"
+          v-if="optionsWithSelectedHidden.length > 0"
+          :class="[css.menu, menuClass]"
+          :style="{ width: `${width}px`, minWidth: menuWidth, minHeight: `${menuMinHeight}px` }"
+          v-bind="virtualContainerProps"
+          @scroll="containerProps.onScroll"
+          @keydown.up.prevent="moveHighlight(true)"
+          @keydown.down.prevent="moveHighlight(false)"
         >
-          <RuiButton
-            v-for="({ item, index }) in renderedData"
-            ref="renderedOptions"
-            :key="getIdentifier(item)"
-            :active="isActiveItem(item)"
-            :size="dense ? 'sm' : undefined"
-            :value="getIdentifier(item)"
-            tabindex="0"
-            variant="list"
-            :class="{
-              highlighted: highlightedIndex === index,
-              [css.highlighted]: highlightedIndex === index,
-              [css.active]: isActiveItem(item),
-            }"
-            @input="setValue(item, index)"
-            @mousedown="highlightedIndex = index"
-          >
-            <template #prepend>
-              <slot
-                name="item.prepend"
-                v-bind="{ disabled, item, active: isActiveItem(item) }"
-              />
-            </template>
-            <slot
-              name="item"
-              v-bind="{ disabled, item, active: isActiveItem(item) }"
-            >
-              {{ getText(item) }}
-            </slot>
-            <template #append>
-              <slot
-                name="item.append"
-                v-bind="{ disabled, item, active: isActiveItem(item) }"
-              />
-            </template>
-          </RuiButton>
-        </div>
-      </div>
-
-      <div
-        v-else-if="!hideNoData"
-        ref="noDataContainer"
-        :style="{ width: `${width}px`, minWidth: menuWidth }"
-        :class="menuClass"
-      >
-        <slot name="no-data">
           <div
-            v-if="!customValue"
-            class="p-4"
+            v-bind="wrapperProps"
+            ref="menuRef"
           >
-            {{ noDataText }}
+            <RuiButton
+              v-for="({ item, index }) in renderedData"
+              ref="renderedOptions"
+              :key="getIdentifier(item)"
+              :active="isActiveItem(item)"
+              :size="dense ? 'sm' : undefined"
+              :value="getIdentifier(item)"
+              tabindex="0"
+              variant="list"
+              :class="{
+                highlighted: highlightedIndex === index,
+                [css.highlighted]: highlightedIndex === index,
+                [css.active]: isActiveItem(item),
+              }"
+              @input="setValue(item, index)"
+              @mousedown="highlightedIndex = index"
+            >
+              <template #prepend>
+                <slot
+                  name="item.prepend"
+                  v-bind="{ disabled, item, active: isActiveItem(item) }"
+                />
+              </template>
+              <slot
+                name="item"
+                v-bind="{ disabled, item, active: isActiveItem(item) }"
+              >
+                {{ getText(item) }}
+              </slot>
+              <template #append>
+                <slot
+                  name="item.append"
+                  v-bind="{ disabled, item, active: isActiveItem(item) }"
+                />
+              </template>
+            </RuiButton>
           </div>
-        </slot>
+        </div>
+
+        <div
+          v-else-if="!hideNoData"
+          :style="{ width: `${width}px`, minWidth: menuWidth }"
+          :class="menuClass"
+        >
+          <slot name="no-data">
+            <div
+              v-if="!customValue"
+              class="p-4"
+            >
+              {{ noDataText }}
+            </div>
+          </slot>
+        </div>
       </div>
     </template>
   </RuiMenu>
