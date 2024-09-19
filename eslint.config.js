@@ -36,4 +36,9 @@ export default rotki({
       },
     ],
   },
+}, {
+  files: ['**/*.ts'],
+  rules: {
+    'storybook/no-uninstalled-addons': 'off', // until storybook eslint official supports eslint 9
+  },
 });
