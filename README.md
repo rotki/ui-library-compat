@@ -2,6 +2,10 @@
 
 A Vue2 backport of the [component library](https://github.com/rotki/ui-library) and design system for rotki
 
+# Deprecation Warning: `@rotki/ui-library-compat` Library
+
+As of the upcoming release of **Rotki 1.35**, the `@rotki/ui-library-compat` library will be officially archived and no longer maintained. This means that there will be no further updates, bug fixes, or support for the `@rotki/ui-library-compat` library going forward.
+
 ## Getting started
 
 ### Installing the library
